@@ -1,4 +1,5 @@
 package model.agents;
 
-public class Vehicle extends AbstractAgent{
+public class Vehicle extends AbstractAgent {
+
 }

@@ -1,8 +1,8 @@
 package model.environment;
 
 public enum Direction {
-    NORTH,
-    SOUTH,
-    EAST,
-    WEST
+  NORTH,
+  SOUTH,
+  EAST,
+  WEST
 }

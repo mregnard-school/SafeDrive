@@ -1,6 +1,11 @@
+import model.environment.Simulation;
+
 public class Main {
 
   public static void main(String[] args) {
-    System.out.println("Hello World!");
+    Simulation simulation = new Simulation(10);
+    while (simulation.hasNext()) {
+      simulation.next();
+    }
   }
 }
