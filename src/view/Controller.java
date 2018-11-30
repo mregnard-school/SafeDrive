@@ -47,6 +47,16 @@ public class Controller implements PropertyChangeListener {
     Logger.addPropertyChangeListener(this);
   }
 
+  private boolean checkIfInteger(TextField input, String value) {
+
+    if (value.matches("\\d*")) {
+      return true;
+    }
+
+    input.setText(value.replaceAll("[^\\d]", ""));
+    return false;
+  }
+
   @FXML
   public void initialize() {
     iterationsLabel.setText("-");
@@ -55,14 +65,15 @@ public class Controller implements PropertyChangeListener {
       if ("".equals(newValue)) {
         runButton.setDisable(true);
       } else {
-        if (!newValue.matches("\\d*")) {
-          iterationsInput.setText(newValue.replaceAll("[^\\d]", ""));
-        } else {
+
+        if(checkIfInteger(iterationsInput, newValue)) {
           runButton.setDisable(false);
         }
-
       }
     }));
+    vehiclesInput.textProperty().addListener((
+        (observable, oldValue, newValue) -> checkIfInteger(vehiclesInput, newValue)
+    ));
   }
 
   private PanView panView;
