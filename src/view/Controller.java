@@ -1,5 +1,6 @@
 package view;
 
+import java.awt.Point;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javafx.application.Platform;
@@ -11,7 +12,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import model.agents.Agent;
 import model.environment.Simulation;
+import util.IntentList;
+import util.IntentList.Intent;
 import util.Logger;
 
 public class Controller implements PropertyChangeListener {
@@ -134,10 +138,16 @@ public class Controller implements PropertyChangeListener {
   }
 
   private void simulationUpdate(PropertyChangeEvent evt) {
-    Simulation updatedSimulation = (Simulation) evt.getNewValue();
-    displayCurrentIteration(updatedSimulation);
-    //Other stuff => Display map
-    checkIfFinishedAndCleanUp(updatedSimulation);
+
+    // @todo [irindul-2018-11-30] : rename
+    panView.init();
+
+    IntentList intents = (IntentList) evt.getNewValue();
+    intents.stream().forEach(intent -> {
+      Point to = intent.getTo();
+      panView.draw(to.x, to.y, panView.getCarColor());
+    });
+
   }
 
   private void checkIfFinishedAndCleanUp(Simulation simulation) {
