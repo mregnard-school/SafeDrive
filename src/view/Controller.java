@@ -92,14 +92,18 @@ public class Controller implements PropertyChangeListener {
   }
 
   private void simulationUpdate(PropertyChangeEvent evt) {
+    Simulation updatedSimulation = (Simulation) evt.getNewValue();
     Platform.runLater(() -> {
-      Simulation updatedSimulation = (Simulation) evt.getNewValue();
-      int step = updatedSimulation.getCurrentStep();
-      int totalStep = updatedSimulation.getMaxIterations();
-
-      String iterations = step + "/" + totalStep;
-      iterationsLabel.setText(iterations);
+      displayCurrentIteration(updatedSimulation);
+      //Other stuff => Display map 
     });
+  }
+
+  private void displayCurrentIteration(Simulation simulation) {
+    int step = simulation.getCurrentStep();
+    int totalStep = simulation.getMaxIterations();
+    String iterations = step + "/" + totalStep;
+    iterationsLabel.setText(iterations);
   }
 
   private void log(PropertyChangeEvent evt) {
