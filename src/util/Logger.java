@@ -7,9 +7,9 @@ import java.util.List;
 
 public class Logger {
 
-  private static List<String> logs;
+  private List<String> logs;
   private static Logger instance;
-  private static PropertyChangeSupport  support;
+  private  PropertyChangeSupport  support;
 
   private Logger() {
     logs = new ArrayList<>();
@@ -17,11 +17,11 @@ public class Logger {
   }
 
   public static void  addPropertyChangeListener(PropertyChangeListener pcl) {
-    support.addPropertyChangeListener(pcl);
+    Logger.getLogger().support.addPropertyChangeListener(pcl);
   }
 
   public static void removePropertyChangeListener(PropertyChangeListener pcl) {
-    support.removePropertyChangeListener(pcl);
+    Logger.getLogger().support.removePropertyChangeListener(pcl);
   }
 
   public static Logger getLogger() {
@@ -31,8 +31,8 @@ public class Logger {
     return Logger.instance;
   }
 
-  public static void log(String logEntry) {
+  public void log(String logEntry) {
     support.firePropertyChange("logs", logs, logEntry);
-    Logger.logs.add(logEntry);
+    this.logs.add(logEntry);
   }
 }

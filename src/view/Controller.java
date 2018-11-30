@@ -2,6 +2,7 @@ package view;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,8 +12,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import model.environment.Simulation;
+import util.Logger;
 
 public class Controller implements PropertyChangeListener {
+
+  private static final Logger LOGGER = Logger.getLogger();
 
   private static final ObservableList<String> logs =
       FXCollections.observableArrayList();
@@ -32,15 +36,23 @@ public class Controller implements PropertyChangeListener {
   @FXML
   AnchorPane logPane;
 
+  public Controller() {
+    System.out.println("In constructor");
+
+    Logger.addPropertyChangeListener(this);
+  }
+
   @FXML
   private void runSimulation(ActionEvent event) {
     System.out.println(this.vehiclesInput.getText());
     System.out.println(this.iterationsInput.getText());
     System.out.println("click on run simulation");
     Simulation simulation = new Simulation(10);
-    while(simulation.hasNext()) {
-      simulation.next();
-    }
+    new Thread(() -> {
+      while (simulation.hasNext()) {
+        simulation.next();
+      }
+    }).start();
   }
 
   @FXML
@@ -52,8 +64,10 @@ public class Controller implements PropertyChangeListener {
 
   @Override
   public void propertyChange(PropertyChangeEvent evt) {
-    String newEntry = (String) evt.getNewValue();
-    logs.add(newEntry);
-    logsList.setItems(logs);
+    Platform.runLater(() -> {
+      String newEntry = (String) evt.getNewValue();
+      logs.add(newEntry);
+      logsList.setItems(logs);
+    });
   }
 }

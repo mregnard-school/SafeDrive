@@ -14,14 +14,13 @@ import javafx.stage.Stage;
 public class App extends Application {
 
   private Stage stage;
-  private static int WIDTH = 1900;
-  private static int HEIGHT = 1080;
+  private static int WIDTH = 1000;
+  private static int HEIGHT = 800;
 
-  
   @Override
   public void start(Stage primaryStage) {
     this.stage = primaryStage;
-    stage.setTitle("SageDrive");
+    stage.setTitle("SafeDrive");
 
     initRootLayout();
   }
