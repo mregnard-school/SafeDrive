@@ -1,8 +1,9 @@
 package model.communication;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface Command {
+public interface Command extends Serializable {
 
   void execute();
 

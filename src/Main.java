@@ -1,11 +1,11 @@
-import model.environment.Simulation;
+import model.communication.udp.UDPListener;
 
 public class Main {
 
   public static void main(String[] args) {
-    Simulation simulation = new Simulation(10);
-    while (simulation.hasNext()) {
-      simulation.next();
-    }
+    UDPListener server = new UDPListener();
+    server.run();
+
+
   }
 }

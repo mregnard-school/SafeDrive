@@ -9,6 +9,7 @@ import model.communication.CarReceiver;
 import model.communication.DialogInvoker;
 import model.communication.Invoker;
 import model.communication.Receiver;
+import model.communication.udp.UDPListener;
 import model.environment.Direction;
 
 public class Vehicle implements Agent, Runnable, Invoker, Receiver {
@@ -32,7 +33,7 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
     nbVehicles++;
     broadCast = new BroadcastInvoker();
     dialog = new DialogInvoker();
-    receiver = new CarReceiver();
+    receiver = new UDPListener(this);
   }
 
   public Vehicle(MotionStrategy motionStrategy) {
@@ -44,11 +45,11 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
     this.motionStrategy = motionStrategy;
   }
 
-  public void accelerer(int vitesse) {
+  public void accelerate(int vitesse) {
     this.vitesse += vitesse;
   }
 
-  public void freiner(int vitesse) {
+  public void brake(int vitesse) {
     this.vitesse -= vitesse;
   }
 
@@ -67,7 +68,7 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   @Override
   public void receive(Command command) {
-    receiver.receive(command);
+    messages.add(command);
   }
 
   @Override
