@@ -21,7 +21,8 @@ public class Loop implements Runnable {
   }
 
   public void interrupt() {
-     Thread.currentThread().interrupt();
+    Thread.currentThread().interrupt();
+    this.run = false;
   }
 
   public void startPause() {
@@ -39,7 +40,7 @@ public class Loop implements Runnable {
   @Override
   public void run() {
     while (!this.isInterrupted()) {
-      while(shouldRun()) {
+      while (shouldRun()) {
         simulation.next();
         support.firePropertyChange("simulation", false, simulation);
       }

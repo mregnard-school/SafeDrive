@@ -76,9 +76,10 @@ public class Controller implements PropertyChangeListener {
 
   @FXML
   private void stopSimulation(ActionEvent event) {
-    System.out.println(this.vehiclesInput.getText());
-    System.out.println(this.iterationsInput.getText());
-    System.out.println("click on run simulation");
+    System.out.println("Stopping");
+    
+    loop.interrupt();
+    loop = null;
   }
 
   @Override
@@ -94,7 +95,6 @@ public class Controller implements PropertyChangeListener {
 
   private void simulationUpdate(PropertyChangeEvent evt) {
     //Simulation updated yeah
-    System.out.println("Simulation");
   }
 
   private void log(PropertyChangeEvent evt) {
