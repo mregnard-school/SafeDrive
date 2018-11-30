@@ -1,8 +1,15 @@
 package model.communication;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Message implements Command {
+public class Message implements Command, Serializable {
+
+  private List<Receiver> receivers;
+
+  public Message(List<Receiver> receivers) {
+    this.receivers = receivers;
+  }
 
   @Override
   public void execute() {
@@ -10,7 +17,7 @@ public class Message implements Command {
   }
 
   @Override
-  public List<Integer> getRecipients() {
-    return null;
+  public List<Receiver> getReceivers() {
+    return receivers;
   }
 }

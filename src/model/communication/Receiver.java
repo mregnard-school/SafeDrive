@@ -1,6 +1,9 @@
 package model.communication;
 
-public interface Receiver {
+import java.io.Serializable;
+
+public interface Receiver extends Serializable {
 
   void receive(Command command);
+  int getId();
 }

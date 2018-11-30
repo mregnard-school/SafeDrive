@@ -34,5 +34,7 @@ public class Logger {
   public void log(String logEntry) {
     this.logs.add(logEntry);
     support.firePropertyChange("logs", this.logs, logEntry);
+    System.out.println(logEntry);
+
   }
 }
