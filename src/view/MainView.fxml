@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -14,7 +15,10 @@
       <Button layoutX="892.0" layoutY="907.0" mnemonicParsing="false" onAction="#stopSimulation" prefHeight="60.0" prefWidth="200.0" text="Stop" />
       <ScrollPane layoutX="1146.0" layoutY="168.0" prefHeight="756.0" prefWidth="662.0">
         <content>
-          <AnchorPane fx:id="logPane" minHeight="0.0" minWidth="0.0" prefHeight="746.0" prefWidth="666.0" />
+          <AnchorPane fx:id="logPane" minHeight="0.0" minWidth="0.0" prefHeight="370.0" prefWidth="205.0">
+               <children>
+                  <ListView id="logsList" editable="true" prefHeight="337.0" prefWidth="200.0" />
+               </children></AnchorPane>
         </content>
       </ScrollPane>
       <TextField fx:id="iterationsInput" layoutX="67.0" layoutY="917.0" prefHeight="60.0" prefWidth="208.0" />

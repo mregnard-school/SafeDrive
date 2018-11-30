@@ -17,6 +17,7 @@ public class App extends Application {
   private static int WIDTH = 1900;
   private static int HEIGHT = 1080;
 
+  
   @Override
   public void start(Stage primaryStage) {
     this.stage = primaryStage;
