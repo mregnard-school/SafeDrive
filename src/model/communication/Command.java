@@ -7,5 +7,5 @@ public interface Command extends Serializable {
 
   void execute();
 
-  List<Integer> getRecipients();    //to know whether the command is broadcast or not
+  List<Receiver> getReceivers();    //to know whether the command is broadcast or not
 }

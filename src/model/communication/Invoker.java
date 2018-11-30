@@ -1,6 +1,8 @@
 package model.communication;
 
-public interface Invoker {
+import java.io.Serializable;
+
+public interface Invoker extends Serializable {
 
   void invoke(Command command);
 }

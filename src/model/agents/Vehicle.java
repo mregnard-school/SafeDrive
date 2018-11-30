@@ -1,6 +1,9 @@
 package model.agents;
 
 import java.awt.Point;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import model.communication.BroadcastInvoker;
@@ -9,16 +12,17 @@ import model.communication.CarReceiver;
 import model.communication.DialogInvoker;
 import model.communication.Invoker;
 import model.communication.Receiver;
-import model.communication.udp.UDPListener;
+import model.communication.Router;
 import model.environment.Direction;
+import util.Logger;
 
 public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   private static int nbVehicles = 1;
 
   private MotionStrategy motionStrategy;
-  private Invoker broadCast;
-  private Invoker dialog;
+  private BroadcastInvoker broadCast;
+  private DialogInvoker dialog;
   private Receiver receiver;
   private int plate;
   private int vitesse;
@@ -31,9 +35,19 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
   public Vehicle() {
     plate = nbVehicles;
     nbVehicles++;
-    broadCast = new BroadcastInvoker();
     dialog = new DialogInvoker();
-    receiver = new UDPListener(this);
+    broadCast = new BroadcastInvoker(new DialogInvoker());
+    receiver = new CarReceiver(this);
+    messages = new ArrayList<>();
+
+    try {
+      InetAddress addr = InetAddress.getByName("127.0.0.1");
+      int port = ((CarReceiver) receiver).getPort();
+      Router.registerVehicle(this, addr, port );
+    } catch (UnknownHostException e) {
+      e.printStackTrace();
+    }
+
   }
 
   public Vehicle(MotionStrategy motionStrategy) {
@@ -59,7 +73,8 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   @Override
   public void invoke(Command command) {
-    if (command.getRecipients().size() == 1) {
+    if (command.getReceivers().size() == 1) {
+      dialog.setReceiver(command.getReceivers().get(0));
       dialog.invoke(command);
     } else {
       broadCast.invoke(command);
@@ -68,7 +83,13 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   @Override
   public void receive(Command command) {
+    Logger.getLogger().log("Command received");
     messages.add(command);
+  }
+
+  @Override
+  public int getId() {
+    return plate;
   }
 
   @Override
