@@ -3,6 +3,7 @@ package view;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import model.environment.Simulation;
+import util.IntentList;
 
 public class Loop implements Runnable {
 
@@ -39,12 +40,17 @@ public class Loop implements Runnable {
 
   @Override
   public void run() {
+    long currentTime = System.currentTimeMillis();
     while (!this.isInterrupted()) {
       while (shouldRun()) {
         simulation.next();
-        System.out.println(simulation.getCurrentStep());
-        
-        support.firePropertyChange("simulation", false, simulation);
+        long loopTime = System.currentTimeMillis();
+
+        if (loopTime - currentTime > 1000) {
+          //Draw
+          currentTime = loopTime;
+        }
+        //support.firePropertyChange("simulation", false, simulation);
       }
     }
   }
