@@ -12,10 +12,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import model.agents.Agent;
 import model.environment.Simulation;
 import util.IntentList;
-import util.IntentList.Intent;
 import util.Logger;
 
 public class Controller implements PropertyChangeListener {
@@ -83,6 +81,7 @@ public class Controller implements PropertyChangeListener {
 
   public void resetSimulation() {
     Simulation simulation = new Simulation(Integer.valueOf(iterationsInput.getText()));
+    iterationsLabel.setText("0/" + iterationsInput.getText());
     loop = new Loop(simulation);
     loop.addPropertyChangeListener(this);
     new Thread(loop).start();
@@ -138,31 +137,32 @@ public class Controller implements PropertyChangeListener {
   }
 
   private void simulationUpdate(PropertyChangeEvent evt) {
-
-    // @todo [irindul-2018-11-30] : rename
-    panView.init();
-
+    panView.clearGrid();
+    //redrawRoutes here
     IntentList intents = (IntentList) evt.getNewValue();
     intents.stream().forEach(intent -> {
       Point to = intent.getTo();
       panView.draw(to.x, to.y, panView.getCarColor());
     });
 
+    displayCurrentIteration();
+    checkIfFinishedAndCleanUp();
   }
 
-  private void checkIfFinishedAndCleanUp(Simulation simulation) {
-    if (simulation.hasNext()) {
+  private void displayCurrentIteration() {
+    int totalStep = loop.getSimulation().getMaxIterations();
+    String iter = iterationsLabel.getText().split("/")[0];
+    int iterationsCount = Integer.parseInt(iter);
+    String iterations = (++iterationsCount) + "/" + totalStep;
+    iterationsLabel.setText(iterations);
+  }
+
+  private void checkIfFinishedAndCleanUp() {
+    if(loop.shouldRun()) {
       return;
     }
 
     deleteSimulation();
-  }
-
-  private void displayCurrentIteration(Simulation simulation) {
-    int step = simulation.getCurrentStep();
-    int totalStep = simulation.getMaxIterations();
-    String iterations = step + "/" + totalStep;
-    iterationsLabel.setText(iterations);
   }
 
   private void log(PropertyChangeEvent evt) {
