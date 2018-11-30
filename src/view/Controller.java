@@ -43,12 +43,36 @@ public class Controller implements PropertyChangeListener {
   @FXML
   Label iterationsLabel;
 
+  private PanView panView;
+
   public Controller() {
     Logger.addPropertyChangeListener(this);
   }
 
-  private boolean checkIfInteger(TextField input, String value) {
+  @FXML
+  public void initialize() {
+    iterationsLabel.setText("-");
+    runButton.setDisable(true);
+    setUpListeners();
+  }
 
+  private void setUpListeners() {
+    iterationsInput.textProperty().addListener((observable, oldValue, newValue) -> {
+      if ("".equals(newValue)) {
+        runButton.setDisable(true);
+      } else {
+
+        if (ensureInteger(iterationsInput, newValue)) {
+          runButton.setDisable(false);
+        }
+      }
+    });
+    vehiclesInput.textProperty().addListener((
+        (observable, oldValue, newValue) -> ensureInteger(vehiclesInput, newValue)
+    ));
+  }
+
+  private boolean ensureInteger(TextField input, String value) {
     if (value.matches("\\d*")) {
       return true;
     }
@@ -56,27 +80,6 @@ public class Controller implements PropertyChangeListener {
     input.setText(value.replaceAll("[^\\d]", ""));
     return false;
   }
-
-  @FXML
-  public void initialize() {
-    iterationsLabel.setText("-");
-    runButton.setDisable(true);
-    iterationsInput.textProperty().addListener(((observable, oldValue, newValue) -> {
-      if ("".equals(newValue)) {
-        runButton.setDisable(true);
-      } else {
-
-        if(checkIfInteger(iterationsInput, newValue)) {
-          runButton.setDisable(false);
-        }
-      }
-    }));
-    vehiclesInput.textProperty().addListener((
-        (observable, oldValue, newValue) -> checkIfInteger(vehiclesInput, newValue)
-    ));
-  }
-
-  private PanView panView;
 
   public void resetSimulation() {
     Simulation simulation = new Simulation(Integer.valueOf(iterationsInput.getText()));
