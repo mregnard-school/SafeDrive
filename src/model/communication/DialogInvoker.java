@@ -1,8 +1,8 @@
 package model.communication;
 
-public class Broadcast implements Invoker {
+public class DialogInvoker implements Invoker {
 
-  public Broadcast() {}
+  public DialogInvoker() {}
 
   @Override
   public void invoke(Command command) {

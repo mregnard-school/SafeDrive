@@ -3,10 +3,10 @@ package model.agents;
 import java.awt.Point;
 import java.util.List;
 import java.util.Objects;
-import model.communication.Broadcast;
+import model.communication.BroadcastInvoker;
 import model.communication.Command;
-import model.communication.ConcreteReveiver;
-import model.communication.Dialog;
+import model.communication.CarReceiver;
+import model.communication.DialogInvoker;
 import model.communication.Invoker;
 import model.communication.Receiver;
 import model.environment.Direction;
@@ -30,9 +30,9 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
   public Vehicle() {
     plate = nbVehicles;
     nbVehicles++;
-    broadCast = new Broadcast();
-    dialog = new Dialog();
-    receiver = new ConcreteReveiver();
+    broadCast = new BroadcastInvoker();
+    dialog = new DialogInvoker();
+    receiver = new CarReceiver();
   }
 
   public Vehicle(MotionStrategy motionStrategy) {
