@@ -47,6 +47,24 @@ public class Controller implements PropertyChangeListener {
     Logger.addPropertyChangeListener(this);
   }
 
+  @FXML
+  public void initialize() {
+    iterationsLabel.setText("-");
+    runButton.setDisable(true);
+    iterationsInput.textProperty().addListener(((observable, oldValue, newValue) -> {
+      if ("".equals(newValue)) {
+        runButton.setDisable(true);
+      } else {
+        if (!newValue.matches("\\d*")) {
+          iterationsInput.setText(newValue.replaceAll("[^\\d]", ""));
+        } else {
+          runButton.setDisable(false);
+        }
+
+      }
+    }));
+  }
+
   private PanView panView;
 
   public void resetSimulation() {
@@ -75,9 +93,10 @@ public class Controller implements PropertyChangeListener {
 
   @FXML
   private void stopSimulation(ActionEvent event) {
-    runButton.setText("Run");
     loop.interrupt();
     loop = null;
+    runButton.setText("Run");
+    iterationsLabel.setText("-");
   }
 
   @Override
@@ -95,7 +114,7 @@ public class Controller implements PropertyChangeListener {
     Simulation updatedSimulation = (Simulation) evt.getNewValue();
     Platform.runLater(() -> {
       displayCurrentIteration(updatedSimulation);
-      //Other stuff => Display map 
+      //Other stuff => Display map
     });
   }
 
