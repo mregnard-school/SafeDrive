@@ -14,8 +14,7 @@ public class PanView {
   private final Color EMPTY_COLOR = Color.WHITE;
   private final Color ROAD_COLOR = Color.GRAY;
   private final Color STROKE_COLOR = Color.BLACK;
-
-
+  private final Color CAR_COLOR = Color.RED;
 
 
   //
@@ -72,4 +71,8 @@ public class PanView {
     pane.setLayoutY(y);
   }
 
+
+  public Color getCarColor() {
+    return CAR_COLOR;
+  }
 }
