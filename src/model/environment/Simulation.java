@@ -1,23 +1,23 @@
 package model.environment;
 
-
-import java.beans.PropertyChangeSupport;
 import util.Logger;
 
 public class Simulation {
 
-  private int nbIterations;
+  private int maxIterations;
   private int currentStep;
-  private PropertyChangeSupport support;
 
-
-  public Simulation(int nbIterations) {
-    this.nbIterations = nbIterations;
+  public Simulation(int maxIterations) {
+    this.maxIterations = maxIterations;
     this.currentStep = 0;
   }
 
-  public boolean hasNext() {
-    return currentStep < nbIterations;
+  public int getMaxIterations() {
+    return maxIterations;
+  }
+
+  public int getCurrentStep() {
+    return currentStep;
   }
 
   public void next() {
@@ -33,5 +33,9 @@ public class Simulation {
     }
 
     Logger.getLogger().log("Finished running yeah");
+  }
+
+  public boolean hasNext() {
+    return currentStep < maxIterations;
   }
 }

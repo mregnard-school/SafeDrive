@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
@@ -42,6 +43,9 @@ public class Controller implements PropertyChangeListener {
 
   @FXML
   Button runButton;
+
+  @FXML
+  Label iterationsLabel;
 
   public Controller() {
     Logger.addPropertyChangeListener(this);
@@ -94,7 +98,14 @@ public class Controller implements PropertyChangeListener {
   }
 
   private void simulationUpdate(PropertyChangeEvent evt) {
-    //Simulation updated yeah
+    Platform.runLater(() -> {
+      Simulation updatedSimulation = (Simulation) evt.getNewValue();
+      int step = updatedSimulation.getCurrentStep();
+      int totalStep = updatedSimulation.getMaxIterations();
+
+      String iterations = step + "/" + totalStep;
+      iterationsLabel.setText(iterations);
+    });
   }
 
   private void log(PropertyChangeEvent evt) {
