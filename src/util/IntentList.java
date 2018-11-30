@@ -5,11 +5,13 @@ import java.util.AbstractMap;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Stream;
 import model.agents.Agent;
 
 public class IntentList {
 
-  private class Intent {
+  public class Intent {
     private AbstractMap.Entry<Point, Point> entry;
 
     public Intent(Point from, Point to) {
@@ -34,5 +36,9 @@ public class IntentList {
   public void addIntent(Agent agent, Point from, Point to) {
     Intent intent = new Intent(from, to);
     intents.put(agent, intent);
+  }
+
+  public Stream<Intent> stream() {
+    return intents.entrySet().stream().map(Entry::getValue);
   }
 }
