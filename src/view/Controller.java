@@ -42,6 +42,8 @@ public class Controller implements PropertyChangeListener {
     Logger.addPropertyChangeListener(this);
   }
 
+  private PanView panView;
+
   @FXML
   private void runSimulation(ActionEvent event) {
     System.out.println(this.vehiclesInput.getText());
@@ -69,5 +71,8 @@ public class Controller implements PropertyChangeListener {
       logs.add(newEntry);
       logsList.setItems(logs);
     });
+  }
+  public void setPanView(PanView panView) {
+    this.panView = panView;
   }
 }
