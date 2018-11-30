@@ -32,7 +32,7 @@ public class Simulation {
       e.printStackTrace();
     }
 
-    Logger.getLogger().log("Finished running yeah");
+    Logger.getLogger().log("Finished stepped " + currentStep);
   }
 
   public boolean hasNext() {

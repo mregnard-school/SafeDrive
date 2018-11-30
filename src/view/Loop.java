@@ -42,6 +42,8 @@ public class Loop implements Runnable {
     while (!this.isInterrupted()) {
       while (shouldRun()) {
         simulation.next();
+        System.out.println(simulation.getCurrentStep());
+        
         support.firePropertyChange("simulation", false, simulation);
       }
     }
