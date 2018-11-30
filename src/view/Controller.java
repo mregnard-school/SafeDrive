@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
@@ -17,11 +18,7 @@ import util.Logger;
 
 public class Controller implements PropertyChangeListener {
 
-  private static final Logger LOGGER = Logger.getLogger();
-
-  private static final ObservableList<String> logs =
-      FXCollections.observableArrayList();
-
+  private static final ObservableList<String> logs = FXCollections.observableArrayList();
 
   private Loop loop;
 
@@ -43,12 +40,14 @@ public class Controller implements PropertyChangeListener {
   @FXML
   Button runButton;
 
+  @FXML
+  Label iterationsLabel;
+
   public Controller() {
     Logger.addPropertyChangeListener(this);
   }
 
   private PanView panView;
-
 
   public void resetSimulation() {
     Simulation simulation = new Simulation(Integer.valueOf(iterationsInput.getText()));
@@ -76,8 +75,7 @@ public class Controller implements PropertyChangeListener {
 
   @FXML
   private void stopSimulation(ActionEvent event) {
-    System.out.println("Stopping");
-    
+    runButton.setText("Run");
     loop.interrupt();
     loop = null;
   }
@@ -94,7 +92,18 @@ public class Controller implements PropertyChangeListener {
   }
 
   private void simulationUpdate(PropertyChangeEvent evt) {
-    //Simulation updated yeah
+    Simulation updatedSimulation = (Simulation) evt.getNewValue();
+    Platform.runLater(() -> {
+      displayCurrentIteration(updatedSimulation);
+      //Other stuff => Display map 
+    });
+  }
+
+  private void displayCurrentIteration(Simulation simulation) {
+    int step = simulation.getCurrentStep();
+    int totalStep = simulation.getMaxIterations();
+    String iterations = step + "/" + totalStep;
+    iterationsLabel.setText(iterations);
   }
 
   private void log(PropertyChangeEvent evt) {
@@ -104,6 +113,7 @@ public class Controller implements PropertyChangeListener {
       logsList.setItems(logs);
     });
   }
+
   public void setPanView(PanView panView) {
     this.panView = panView;
   }
