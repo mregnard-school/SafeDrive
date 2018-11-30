@@ -112,6 +112,10 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
     this.direction = direction;
   }
 
+  public void setCurrentPos(Point currentPos) {
+    this.currentPos = currentPos;
+  }
+
   @Override
   public List<Command> getCommands() {
     return messages;
