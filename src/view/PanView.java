@@ -40,9 +40,7 @@ public class PanView {
         StackPane stack = new StackPane();
         rectangles[i][j] = new Rectangle(i, j, width, height);
         rectangles[i][j].setFill(Color.WHITE);
-        rectangles[i][j].setArcWidth(10.0);
-        rectangles[i][j].setArcHeight(10.0);
-        rectangles[i][j].setStroke(STROKE_COLOR);
+//        rectangles[i][j].setStroke(STROKE_COLOR);
         stack.getChildren().addAll(rectangles[i][j]);
         getPane().add(stack, j, i );
 
