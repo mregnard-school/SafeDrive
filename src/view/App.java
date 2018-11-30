@@ -5,6 +5,7 @@ import javafx.application.Application;
 import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -13,13 +14,13 @@ import javafx.stage.Stage;
 public class App extends Application {
 
   private Stage stage;
-  private static int WIDTH = 1900;
-  private static int HEIGHT = 1080;
+  private static int WIDTH = 1000;
+  private static int HEIGHT = 800;
 
   @Override
   public void start(Stage primaryStage) {
     this.stage = primaryStage;
-    stage.setTitle("SageDrive");
+    stage.setTitle("SafeDrive");
 
     initRootLayout();
   }
@@ -34,8 +35,6 @@ public class App extends Application {
       FXMLLoader loader = new FXMLLoader();
       loader.setLocation(App.class.getResource("MainView.fxml"));
       Pane rootLayout = loader.load();
-
-
       Scene scene = new Scene(rootLayout, WIDTH, HEIGHT);
       stage.setScene(scene);
       stage.show();

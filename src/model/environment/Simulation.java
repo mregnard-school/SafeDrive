@@ -1,5 +1,6 @@
 package model.environment;
 
+
 public class Simulation {
 
   private int nbIterations;
@@ -19,6 +20,6 @@ public class Simulation {
     if (!this.hasNext()) { //IF THERE IS NOTHING AFTER
       return;
     }
-    this.currentStep ++;
+    this.currentStep++;
   }
 }
