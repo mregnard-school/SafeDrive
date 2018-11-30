@@ -7,21 +7,19 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane prefHeight="451.0" prefWidth="680.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.Controller">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1980.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.Controller">
    <children>
-      <Pane fx:id="simulationPane" layoutX="18.0" layoutY="70.0" prefHeight="295.0" prefWidth="322.0" />
-      <ScrollPane layoutX="400.0" layoutY="63.0" prefHeight="358.0" prefWidth="200.0">
+      <Pane fx:id="simulationPane" layoutX="108.0" layoutY="68.0" prefHeight="816.0" prefWidth="862.0" />
+      <Button layoutX="674.0" layoutY="907.0" mnemonicParsing="false" onAction="#runSimulation" prefHeight="60.0" prefWidth="200.0" text="Run" />
+      <Button layoutX="892.0" layoutY="907.0" mnemonicParsing="false" onAction="#stopSimulation" prefHeight="60.0" prefWidth="200.0" text="Stop" />
+      <ScrollPane layoutX="1146.0" layoutY="168.0" prefHeight="756.0" prefWidth="662.0">
         <content>
-          <AnchorPane fx:id="logPane" minHeight="0.0" minWidth="0.0" prefHeight="370.0" prefWidth="205.0" />
+          <AnchorPane fx:id="logPane" minHeight="0.0" minWidth="0.0" prefHeight="746.0" prefWidth="666.0" />
         </content>
       </ScrollPane>
-      <Label layoutX="53.0" layoutY="40.0" text="Simultation" />
-      <Label layoutX="400.0" layoutY="40.0" text="Logs" />
-      <Button layoutX="277.0" layoutY="416.0" mnemonicParsing="false" onAction="#runSimulation" text="Run" />
-      <Button layoutX="340.0" layoutY="416.0" mnemonicParsing="false" onAction="#StopSimulation" text="Stop" />
-      <TextField fx:id="iterationsInput" layoutX="16.0" layoutY="416.0" prefHeight="26.0" prefWidth="107.0" />
-      <TextField fx:id="vehiclesInput" layoutX="165.0" layoutY="416.0" prefHeight="26.0" prefWidth="75.0" />
-      <Label layoutX="15.0" layoutY="400.0" text="Iterations" />
-      <Label layoutX="169.0" layoutY="400.0" text="Vehicles" />
+      <TextField fx:id="iterationsInput" layoutX="67.0" layoutY="917.0" prefHeight="60.0" prefWidth="208.0" />
+      <TextField fx:id="vehiclesInput" layoutX="301.0" layoutY="916.0" prefHeight="60.0" prefWidth="234.0" />
+      <Label layoutX="147.0" layoutY="886.0" prefHeight="30.0" prefWidth="59.0" text="Vehicles" />
+      <Label layoutX="366.0" layoutY="886.0" prefHeight="30.0" prefWidth="117.0" text="Iterations" />
    </children>
-</AnchorPane>
+</Pane>

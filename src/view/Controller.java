@@ -27,4 +27,11 @@ public class Controller {
     System.out.println("click on run simulation");
   }
 
+  @FXML
+  private void stopSimulation(ActionEvent event) {
+    System.out.println(this.vehiclesInput.getText());
+    System.out.println(this.iterationsInput.getText());
+    System.out.println("click on run simulation");
+  }
+
 }
