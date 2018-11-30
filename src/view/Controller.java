@@ -11,8 +11,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import model.environment.Simulation;
 import util.Logger;
 
@@ -26,22 +24,19 @@ public class Controller implements PropertyChangeListener {
   TextField iterationsInput;
 
   @FXML
-  ListView<String> logsList;
-
-  @FXML
   TextField vehiclesInput;
-
-  @FXML
-  Pane simulationPane;
-
-  @FXML
-  AnchorPane logPane;
 
   @FXML
   Button runButton;
 
   @FXML
+  Button stopButton;
+
+  @FXML
   Label iterationsLabel;
+
+  @FXML
+  ListView<String> logsList;
 
   private PanView panView;
 
@@ -53,6 +48,7 @@ public class Controller implements PropertyChangeListener {
   public void initialize() {
     iterationsLabel.setText("-");
     runButton.setDisable(true);
+    stopButton.setDisable(true);
     setUpListeners();
   }
 
@@ -86,6 +82,7 @@ public class Controller implements PropertyChangeListener {
     loop = new Loop(simulation);
     loop.addPropertyChangeListener(this);
     new Thread(loop).start();
+    stopButton.setDisable(false);
   }
 
   @FXML
@@ -107,29 +104,48 @@ public class Controller implements PropertyChangeListener {
 
   @FXML
   private void stopSimulation(ActionEvent event) {
+    deleteSimulation();
+    Logger.getLogger().log("Simulation was stopped");
+  }
+
+  private void deleteSimulation() {
+    if (loop == null) {
+      return;
+    }
+
     loop.interrupt();
     loop = null;
     runButton.setText("Run");
     iterationsLabel.setText("-");
+    stopButton.setDisable(true);
   }
 
   @Override
   public void propertyChange(PropertyChangeEvent evt) {
-    String property = evt.getPropertyName();
-    if ("logs".equals(property)) {
-      this.log(evt);
-    }
-    if ("simulation".equals(property)) {
-      this.simulationUpdate(evt);
-    }
+    Platform.runLater(() -> {
+      String property = evt.getPropertyName();
+      if ("logs".equals(property)) {
+        this.log(evt);
+      }
+      if ("simulation".equals(property)) {
+        this.simulationUpdate(evt);
+      }
+    });
   }
 
   private void simulationUpdate(PropertyChangeEvent evt) {
     Simulation updatedSimulation = (Simulation) evt.getNewValue();
-    Platform.runLater(() -> {
-      displayCurrentIteration(updatedSimulation);
-      //Other stuff => Display map
-    });
+    displayCurrentIteration(updatedSimulation);
+    //Other stuff => Display map
+    checkIfFinishedAndCleanUp(updatedSimulation);
+  }
+
+  private void checkIfFinishedAndCleanUp(Simulation simulation) {
+    if (simulation.hasNext()) {
+      return;
+    }
+
+    deleteSimulation();
   }
 
   private void displayCurrentIteration(Simulation simulation) {
@@ -140,11 +156,9 @@ public class Controller implements PropertyChangeListener {
   }
 
   private void log(PropertyChangeEvent evt) {
-    Platform.runLater(() -> {
-      String newEntry = (String) evt.getNewValue();
-      logs.add(newEntry);
-      logsList.setItems(logs);
-    });
+    String newEntry = (String) evt.getNewValue();
+    logs.add(newEntry);
+    logsList.setItems(logs);
   }
 
   public void setPanView(PanView panView) {
