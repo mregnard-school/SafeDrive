@@ -17,8 +17,6 @@ public class Logger {
   }
 
   public static void  addPropertyChangeListener(PropertyChangeListener pcl) {
-    System.out.println("Added listener");
-
     Logger.getLogger().support.addPropertyChangeListener(pcl);
   }
 
