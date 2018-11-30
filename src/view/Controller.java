@@ -140,8 +140,7 @@ public class Controller implements PropertyChangeListener {
   private void simulationUpdate(PropertyChangeEvent evt) {
     panView.clearGrid();
 
-    List<Road> roads = loop.getSimulation().getLand().getRoads();
-    panView.draw(roads);
+    panView.draw(loop.getSimulation().getLand());
     IntentList intents = (IntentList) evt.getNewValue();
     intents.stream().forEach(panView::draw);
     displayCurrentIteration();

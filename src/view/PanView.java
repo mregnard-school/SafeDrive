@@ -6,6 +6,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import model.environment.Land;
 import model.environment.Road;
 import util.IntentList.Intent;
 
@@ -87,10 +88,15 @@ public class PanView {
           draw(new Point(i, position), ROAD_COLOR);
         }
       }
-      road.getJoins().forEach(join-> {
-        draw(join, Color.BLUE);
-      });
     });
+  }
+
+
+  public void draw(Land land) {
+    draw(land.getRoads());
+//    land.getJoins().forEach(point -> {
+//      draw(point, Color.BLUE);
+//    });
   }
 
   public void draw(Intent intent) {
