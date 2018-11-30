@@ -18,11 +18,7 @@ import util.Logger;
 
 public class Controller implements PropertyChangeListener {
 
-  private static final Logger LOGGER = Logger.getLogger();
-
-  private static final ObservableList<String> logs =
-      FXCollections.observableArrayList();
-
+  private static final ObservableList<String> logs = FXCollections.observableArrayList();
 
   private Loop loop;
 
@@ -53,7 +49,6 @@ public class Controller implements PropertyChangeListener {
 
   private PanView panView;
 
-
   public void resetSimulation() {
     Simulation simulation = new Simulation(Integer.valueOf(iterationsInput.getText()));
     loop = new Loop(simulation);
@@ -80,8 +75,7 @@ public class Controller implements PropertyChangeListener {
 
   @FXML
   private void stopSimulation(ActionEvent event) {
-    System.out.println("Stopping");
-    
+    runButton.setText("Run");
     loop.interrupt();
     loop = null;
   }
@@ -115,6 +109,7 @@ public class Controller implements PropertyChangeListener {
       logsList.setItems(logs);
     });
   }
+
   public void setPanView(PanView panView) {
     this.panView = panView;
   }

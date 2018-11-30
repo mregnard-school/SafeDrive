@@ -17,6 +17,8 @@ public class Logger {
   }
 
   public static void  addPropertyChangeListener(PropertyChangeListener pcl) {
+    System.out.println("Added listener");
+
     Logger.getLogger().support.addPropertyChangeListener(pcl);
   }
 
@@ -32,7 +34,7 @@ public class Logger {
   }
 
   public void log(String logEntry) {
-    support.firePropertyChange("logs", logs, logEntry);
     this.logs.add(logEntry);
+    support.firePropertyChange("logs", this.logs, logEntry);
   }
 }
