@@ -63,4 +63,8 @@ public class Road {
   public Map<Point, Road> getJoins() {
     return joins;
   }
+
+  public boolean isHorizontal() {
+    return (axis.equals(Direction.WEST) || axis.equals(Direction.EAST));
+  }
 }

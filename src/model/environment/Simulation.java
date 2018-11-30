@@ -12,9 +12,11 @@ public class Simulation {
 
   private int maxIterations;
   private int currentStep;
-  private IntentList intents; 
+  private IntentList intents;
+  private Land land;
 
   public Simulation(int maxIterations) {
+    land = new Land();
     this.maxIterations = maxIterations;
     this.currentStep = 0;
   }
@@ -57,5 +59,9 @@ public class Simulation {
 
   public IntentList getIntents() {
     return this.intents;
+  }
+
+  public Land getLand() {
+    return land;
   }
 }

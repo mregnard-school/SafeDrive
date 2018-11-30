@@ -1,8 +1,8 @@
 package view;
 
-import java.awt.Point;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import model.environment.Road;
 import model.environment.Simulation;
 import util.IntentList;
 import util.Logger;
@@ -138,13 +139,11 @@ public class Controller implements PropertyChangeListener {
 
   private void simulationUpdate(PropertyChangeEvent evt) {
     panView.clearGrid();
-    //redrawRoutes here
-    IntentList intents = (IntentList) evt.getNewValue();
-    intents.stream().forEach(intent -> {
-      Point to = intent.getTo();
-      panView.draw(to.x, to.y, panView.getCarColor());
-    });
 
+    List<Road> roads = loop.getSimulation().getLand().getRoads();
+    panView.draw(roads);
+    IntentList intents = (IntentList) evt.getNewValue();
+    intents.stream().forEach(panView::draw);
     displayCurrentIteration();
     checkIfFinishedAndCleanUp();
   }

@@ -17,12 +17,13 @@ public class Land {
     roads = new ArrayList<>();
     Road road = new Road(Direction.EAST, new Point(0, 10));
     roads.add(road);
-    Vehicle agent = new Vehicle(new DumbMotion());
-    agent.setCurrentPos(new Point(25, 10));
-    road.addVehicle(agent);
   }
 
   public Land() {
     init();
+  }
+
+  public List<Road> getRoads() {
+    return roads;
   }
 }
