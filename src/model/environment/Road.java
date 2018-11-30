@@ -14,14 +14,16 @@ public class Road {
   private Point position;
   private Map<Point, Optional<Vehicle>> vehicles;
   private List<Point> exits;
-  private Map<Point, Road> joins;
+  private List<Point> joins;
+  private int pivot; // x or y, depend if it's horizontal or not
 
-  public Road(Direction axis, Point position) {
+  public Road(Direction axis, int pivot) {
     vehicles = new HashMap<>();
     exits = new ArrayList<>();
-    joins = new HashMap<>();
+    joins = new ArrayList<>();
     this.axis = axis;
-    this.position = position;
+    this.pivot = pivot;
+    this.position = isHorizontal() ? new Point(0, pivot) : new Point(pivot, 0) ;
   }
 
   public void addExit(Point point) {
@@ -36,16 +38,12 @@ public class Road {
     vehicles.put(vehicle.getCurrentPos(), Optional.empty());
   }
 
-  public void addJoin(Road road) {
-    Point join = new Point();
-    if (road.getAxis().equals(Direction.WEST) || road.getAxis().equals(Direction.EAST)) {
-      join.x = position.x;
-      join.y = road.getPosition().y;
-    } else {
-      join.y = position.y;
-      join.x = road.getPosition().x;
-    }
-    joins.put(join, road);
+  public void addJoin(Point point) {
+    joins.add(point);
+  }
+
+  public void setJoins(List<Point> joins) {
+    this.joins = joins;
   }
 
   public Direction getAxis() {
@@ -60,11 +58,15 @@ public class Road {
     return exits;
   }
 
-  public Map<Point, Road> getJoins() {
+  public List<Point> getJoins() {
     return joins;
   }
 
   public boolean isHorizontal() {
     return (axis.equals(Direction.WEST) || axis.equals(Direction.EAST));
+  }
+
+  public int getPivot() {
+    return pivot;
   }
 }

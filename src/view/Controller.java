@@ -81,7 +81,7 @@ public class Controller implements PropertyChangeListener {
   }
 
   public void resetSimulation() {
-    Simulation simulation = new Simulation(Integer.valueOf(iterationsInput.getText()));
+    Simulation simulation = new Simulation(Integer.valueOf(iterationsInput.getText()), panView.getWidth(), panView.getHeight());
     iterationsLabel.setText("0/" + iterationsInput.getText());
     loop = new Loop(simulation);
     loop.addPropertyChangeListener(this);

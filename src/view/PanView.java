@@ -23,13 +23,13 @@ public class PanView {
   //
   private GridPane pane = new GridPane();
   private Rectangle[][] rectangles;
-  private int nbRows;
-  private int nbColumns;
+  private int height;
+  private int width;
 
 
   public PanView(int nbRows, int nbColumns, double width, double height) {
-    this.nbRows = nbRows;
-    this.nbColumns = nbColumns;
+    this.height = nbRows;
+    this.width = nbColumns;
     rectangles = new Rectangle[nbRows][nbColumns];
     /*
      */
@@ -37,12 +37,11 @@ public class PanView {
   }
 
   private void drawView(double width, double height) {
-    for (int i = 0; i < nbRows; i++) {
-      for (int j = 0; j < nbColumns; j++) {
+    for (int i = 0; i < this.height; i++) {
+      for (int j = 0; j < this.width; j++) {
         StackPane stack = new StackPane();
         rectangles[i][j] = new Rectangle(i, j, width, height);
         rectangles[i][j].setFill(Color.WHITE);
-//        rectangles[i][j].setStroke(STROKE_COLOR);
         stack.getChildren().addAll(rectangles[i][j]);
         getPane().add(stack, j, i );
 
@@ -51,8 +50,8 @@ public class PanView {
   }
   
   public void clearGrid(){
-    for (int i = 0; i < nbRows; i++) {
-      for (int j = 0; j < nbColumns; j++) {
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
         rectangles[i][j].setFill(EMPTY_COLOR);
       }
     }
@@ -74,19 +73,23 @@ public class PanView {
       int nbTiles =  0;
       int position =  0;
       if(road.isHorizontal()) {
-        nbTiles = nbColumns;
-        position = road.getPosition().y;
+        nbTiles = width;
+        position = road.getPivot();
       } else {
-        nbTiles = nbRows;
-        position = road.getPosition().x;
+        nbTiles = height;
+        position = road.getPivot();
       }
       for (int i = 0; i < nbTiles ; i++) {
-        if (!road.isHorizontal()) {
-          draw(new Point(i, position), ROAD_COLOR);
+        if (road.isHorizontal()) {
+          Point point = new Point(position, i);
+          draw(point, ROAD_COLOR);
         } else {
-          draw(new Point(position, i), ROAD_COLOR);
+          draw(new Point(i, position), ROAD_COLOR);
         }
       }
+      road.getJoins().forEach(join-> {
+        draw(join, Color.BLUE);
+      });
     });
   }
 
@@ -111,11 +114,11 @@ public class PanView {
     return ROAD_COLOR;
   }
 
-  public int getNbRows() {
-    return nbRows;
+  public int getHeight() {
+    return height;
   }
 
-  public int getNbColumns() {
-    return nbColumns;
+  public int getWidth() {
+    return width;
   }
 }
