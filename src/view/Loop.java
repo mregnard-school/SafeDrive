@@ -2,16 +2,10 @@ package view;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.AbstractMap;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.LinkedList;
-import java.util.Map.Entry;
 import java.util.Queue;
-import java.util.function.Consumer;
-import model.agents.Agent;
 import model.environment.Simulation;
 import util.IntentList;
-import util.IntentList.Intent;
 
 public class Loop implements Runnable {
 
@@ -19,7 +13,6 @@ public class Loop implements Runnable {
   private boolean run;
   private PropertyChangeSupport support;
   private Queue<IntentList> buffer;
-  //private int displayedStep = 0;
 
   public Loop(Simulation simulation) {
     this.simulation = simulation;
@@ -35,6 +28,7 @@ public class Loop implements Runnable {
   public void interrupt() {
     Thread.currentThread().interrupt();
     this.run = false;
+    this.buffer = new LinkedList<>();
   }
 
   public void startPause() {
@@ -45,8 +39,12 @@ public class Loop implements Runnable {
     return Thread.currentThread().isInterrupted();
   }
 
-  private boolean shouldRun() {
-    return (simulation.hasNext() || !buffer.isEmpty()) && run;
+  public boolean shoudInterrupt() {
+    return !simulation.hasNext() && buffer.isEmpty();
+  }
+
+  public boolean shouldRun() {
+    return !shoudInterrupt() && run;
   }
 
   @Override
@@ -54,31 +52,34 @@ public class Loop implements Runnable {
     long currentTime = System.currentTimeMillis();
     while (!this.isInterrupted()) {
       while (shouldRun()) {
-        simulation.next();
-        long loopTime = System.currentTimeMillis();
-        buffer.add(simulation.getIntents());
+        if (simulation.hasNext()) {
+          simulation.next();
+          buffer.add(simulation.getIntents());
+        }
 
-        System.out.println("Loop time " + loopTime);
-        System.out.println("Current time " + currentTime);
-        System.out.println("diff " + (loopTime - currentTime));
+        long loopTime = System.currentTimeMillis();
 
         if (loopTime - currentTime > 1000) {
-          System.out.println("What");
-
           draw();
           currentTime = loopTime;
         }
-        //support.firePropertyChange("simulation", false, simulation);
+      }
+
+      if (shoudInterrupt()) {
+        this.interrupt();
       }
     }
   }
 
   private void draw() {
     IntentList intents = buffer.poll();
-    if (intents != null) {
-      System.out.println("Firering");
 
+    if (intents != null) {
       support.firePropertyChange("simulation", this.simulation, intents);
     }
+  }
+
+  public Simulation getSimulation() {
+    return this.simulation;
   }
 }

@@ -47,7 +47,7 @@ public class PanView {
     }
   }
   
-  public void init(){
+  public void clearGrid(){
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < columns; j++) {
         rectangles[i][j].setFill(EMPTY_COLOR);
