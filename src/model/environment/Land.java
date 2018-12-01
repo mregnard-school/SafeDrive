@@ -32,15 +32,19 @@ public class Land {
 
   public void createVerticalRoads(int step) {
     for (int i = 0; i < width; i += step) {
-      Road road = new Road(Direction.SOUTH, i);
-      roads.add(road);
+      roads.add(new Road(Direction.SOUTH, i));
+      if (i + 1 < width) {
+        roads.add(new Road(Direction.NORTH, i));
+      }
     }
   }
 
   public void createHorizontalRoads(int step) {
     for (int i = 0; i < height; i += step) {
-      Road road = new Road(Direction.EAST, i);
-      roads.add(road);
+      roads.add(new Road(Direction.EAST, i));
+      if (i + 1 < width) {
+        roads.add(new Road(Direction.WEST, i));
+      }
     }
   }
 

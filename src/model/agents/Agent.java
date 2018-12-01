@@ -12,4 +12,6 @@ public interface Agent {
   void setDirection(Direction direction);
 
   List<Direction> getActions();
+
+  int getId();
 }

@@ -4,7 +4,6 @@ import java.awt.Point;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
@@ -29,7 +28,7 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
   transient private BroadcastInvoker broadcaster;
   transient private DialogInvoker dialoger;
   private CarReceiver receiver;
-  private int plate;
+  private int id;
   private int speed;
   private Point currentPos;
   private Point destination;
@@ -40,7 +39,7 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
   private Land land;
 
   private Vehicle() {
-    plate = nbVehicles++;
+    id = nbVehicles++;
     dialoger = new DialogInvoker();
     broadcaster = new BroadcastInvoker(dialoger);
     receiver = new CarReceiver(this);
@@ -106,7 +105,7 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   @Override
   public int getId() {
-    return plate;
+    return id;
   }
 
   @Override
@@ -126,12 +125,12 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
     Vehicle other = (Vehicle) obj;
 
-    return this.plate == other.plate;
+    return this.id == other.id;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(plate);
+    return Objects.hash(id);
   }
 
   @Override
@@ -157,9 +156,6 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
     return "Vehicule= {currentPos: "+ currentPos +", destination: " + "}" +destination;
   }
 
-  public int getPlate() {
-    return plate;
-  }
 
   public Point getCurrentPos() {
     return currentPos;

@@ -11,8 +11,8 @@ public class Router {
   private static Map<Integer, Integer> ports = new HashMap<>();
 
   public static void registerVehicle(Vehicle vehicle, InetAddress address, int port) {
-    ips.put(vehicle.getPlate(), address);
-    ports.put(vehicle.getPlate(), port);
+    ips.put(vehicle.getId(), address);
+    ports.put(vehicle.getId(), port);
   }
 
   public static InetAddress getAddressOf(Integer plate) {
@@ -20,7 +20,7 @@ public class Router {
   }
 
   public static InetAddress getAddressOf(Vehicle vehicle) {
-    return getAddressOf(vehicle.getPlate());
+    return getAddressOf(vehicle.getId());
   }
 
   public static int getPortOf(Integer plate) {
@@ -28,7 +28,7 @@ public class Router {
   }
 
   public static int getPortOf(Vehicle vehicle) {
-    return getPortOf(vehicle.getPlate());
+    return getPortOf(vehicle.getId());
   }
 
 
