@@ -93,8 +93,13 @@ public class Controller implements PropertyChangeListener {
   }
 
   public void resetSimulation() {
+    int interations = Integer.parseInt(iterationsInput.getText());
+    int width = grid.getWidth();
+    int height = grid.getHeight();
+    int nbAgents = Integer.parseInt(vehiclesInput.getText());
+
     Simulation simulation = new Simulation(Integer.valueOf(iterationsInput.getText()), grid.getWidth(), grid
-        .getHeight());
+        .getHeight(), nbAgents);
     iterationsLabel.setText("0/" + iterationsInput.getText());
     loop = new Loop(simulation);
     loop.addPropertyChangeListener(this);

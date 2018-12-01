@@ -1,9 +1,11 @@
 package model.environment;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.List;
-import model.agents.Agent;
-import model.communication.Command;
+import model.agents.DumbMotion;
+import model.agents.MotionStrategy;
+import model.agents.Vehicle;
 import util.IntentList;
 import util.Logger;
 
@@ -13,11 +15,34 @@ public class Simulation {
   private int currentStep;
   private IntentList intents;
   private Land land;
+  private List<Vehicle> vehicles;
 
-  public Simulation(int maxIterations, int width, int height) {
+  public Simulation(int maxIterations, int width, int height, int nbAgent) {
     land = new Land(width, height);
     this.maxIterations = maxIterations;
     this.currentStep = 0;
+    vehicles = new ArrayList<>();
+    createAgents(nbAgent);
+  }
+
+  private void createAgents(int nbAgent) {
+    for (int i = 0; i < nbAgent; i++) {
+      createAgent();
+    }
+  }
+
+  private void createAgent() {
+    // @todo [irindul-2018-12-01] : Change with real position
+    Point startingPosition = new Point(0, 0);
+    // @todo [irindul-2018-12-01] : Change with random destination
+    Point destination = new Point(10, 10);
+    // @todo [irindul-2018-12-01] : Change with road direction
+    Direction direction = Direction.SOUTH;
+    MotionStrategy movement = new DumbMotion();
+
+    Vehicle vehicle = new Vehicle(startingPosition, destination, direction, movement);
+    this.vehicles.add(vehicle);
+
   }
 
   public int getMaxIterations() {
@@ -28,27 +53,16 @@ public class Simulation {
     return currentStep;
   }
 
+  private void step() {
+    this.currentStep++;
+    intents = new IntentList();
+  }
+
   public void next() {
     if (!this.hasNext()) {
       return;
     }
-    this.currentStep++;
-    intents = new IntentList();
-
-    Agent a = new Agent() {
-      @Override
-      public List<Command> getCommands() {
-        return null;
-      }
-
-      @Override
-      public void setDirection(Direction direction) {
-
-      }
-    };
-
-    intents.addIntent(a, new Point(currentStep - 1, 0), new Point(currentStep, 0));
-
+    step();
     Logger.log("Finished stepped " + currentStep);
   }
 
