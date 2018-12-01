@@ -19,7 +19,7 @@ public class App extends Application {
   public void start(Stage primaryStage) {
     this.stage = primaryStage;
     stage.setTitle("SafeDrive");
-    this.initGrid(3, 2);
+    this.initGrid(30, 20);
   }
 
   public static void main(String[] args) {
