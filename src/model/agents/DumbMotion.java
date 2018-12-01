@@ -10,7 +10,7 @@ public class DumbMotion implements MotionStrategy {
 
   @Override
   public void run(Agent agent) {
-    List<Command> commands = agent.getCommands();
+    Queue<Command> commands = agent.getCommands();
     List<Direction>  answers = analyzeMessage(commands);
     if (!answers.isEmpty()) {
       //@todo Do something with this directions
@@ -30,7 +30,7 @@ public class DumbMotion implements MotionStrategy {
     }
   }
 
-  private List<Direction> analyzeMessage(List<Command> commands) {
+  private List<Direction> analyzeMessage(Queue<Command> commands) {
     List<Direction> answers = new ArrayList<>();
     return answers;
   }
