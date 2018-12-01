@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import model.communication.BroadcastInvoker;
-import model.communication.Command;
 import model.communication.CarReceiver;
+import model.communication.Command;
 import model.communication.DialogInvoker;
 import model.communication.Invoker;
 import model.communication.Receiver;
@@ -43,7 +43,7 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
     try {
       InetAddress addr = InetAddress.getByName("127.0.0.1");
       int port = ((CarReceiver) receiver).getPort();
-      Router.registerVehicle(this, addr, port );
+      Router.registerVehicle(this, addr, port);
     } catch (UnknownHostException e) {
       e.printStackTrace();
     }
@@ -83,7 +83,7 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   @Override
   public void receive(Command command) {
-    Logger.getLogger().log("Command received");
+    Logger.log("Command received");
     messages.add(command);
   }
 
@@ -99,7 +99,17 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   @Override
   public boolean equals(Object obj) {
-    return ((Vehicle) obj).plate == plate;
+    if (obj == null) {
+      return false;
+    }
+
+    if (!(obj instanceof Vehicle)) {
+      return false;
+    }
+
+    Vehicle other = (Vehicle) obj;
+
+    return this.plate == other.plate;
   }
 
   @Override

@@ -123,7 +123,7 @@ public class Controller implements PropertyChangeListener {
   @FXML
   private void stopSimulation(ActionEvent event) {
     deleteSimulation();
-    Logger.getLogger().log("Simulation was stopped");
+    Logger.log("Simulation was stopped");
   }
 
   private void deleteSimulation() {

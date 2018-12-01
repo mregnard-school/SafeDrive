@@ -32,8 +32,6 @@ public class PanView {
     this.height = nbRows;
     this.width = nbColumns;
     rectangles = new Rectangle[nbRows][nbColumns];
-    /*
-     */
     drawView(width, height);
   }
 
@@ -58,9 +56,7 @@ public class PanView {
     }
   }
 
-  /**
-   * @return the pane
-   */
+
   public GridPane getPane() {
     return pane;
   }
@@ -69,34 +65,36 @@ public class PanView {
     rectangles[x][y].setFill(color);
   }
 
-  public void draw(List<Road> roads) {
-    roads.forEach(road -> {
-      int nbTiles =  0;
-      int position =  0;
-      if(road.isHorizontal()) {
-        nbTiles = width;
-        position = road.getPivot();
-      } else {
-        nbTiles = height;
-        position = road.getPivot();
-      }
-      for (int i = 0; i < nbTiles ; i++) {
-        if (road.isHorizontal()) {
-          Point point = new Point(position, i);
-          draw(point, ROAD_COLOR);
-        } else {
-          draw(new Point(i, position), ROAD_COLOR);
-        }
-      }
-    });
-  }
-
-
   public void draw(Land land) {
     draw(land.getRoads());
 //    land.getJoins().forEach(point -> {
 //      draw(point, Color.BLUE);
 //    });
+  }
+
+  public void draw(List<Road> roads) {
+    roads.forEach(this::draw);
+  }
+
+  public void draw(Road road) {
+    int nbTiles;
+    int position;
+    if (road.isHorizontal()) {
+      nbTiles = width;
+      position = road.getPivot();
+    } else {
+      nbTiles = height;
+      position = road.getPivot();
+    }
+    for (int i = 0; i < nbTiles; i++) {
+      Point point;
+      if (road.isHorizontal()) {
+        point = new Point(position, i);
+      } else {
+        point = new Point(i, position);
+      }
+      draw(point, ROAD_COLOR);
+    }
   }
 
   public void draw(Intent intent) {

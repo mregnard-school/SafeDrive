@@ -38,6 +38,10 @@ public class Road {
     vehicles.put(vehicle.getCurrentPos(), Optional.empty());
   }
 
+  public Optional<Vehicle> getVehicleAt(Point point) {
+    return vehicles.get(point);
+  }
+
   public void addJoin(Point point) {
     joins.add(point);
   }

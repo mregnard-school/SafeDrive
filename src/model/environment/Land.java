@@ -10,22 +10,36 @@ public class Land {
   private List<Vehicle> agents;
   private List<Road> roads;
   private List<Point> joins;
+  private int width;
+  private int height;
 
-  public Land(int width, int height) {    //20 30
+  public Land(int width, int height) {
     agents = new ArrayList<>();
     roads = new ArrayList<>();
     joins = new ArrayList<>();
-    int step = 5;
+    this.width = width;
+    this.height = height;
+    createRoads(5);
+  }
 
+  public void createRoads(int step) {
+    createVerticalRoads(step);
+    createHorizontalRoads(step);
+    addJoinPoint(step, width, height);
+  }
+
+  public void createVerticalRoads(int step) {
     for (int i = 0; i < width; i += step) {
       Road road = new Road(Direction.SOUTH, i);
       roads.add(road);
     }
-    for (int i = 0; i < height; i+= step) {
+  }
+
+  public void createHorizontalRoads(int step) {
+    for (int i = 0; i < height; i += step) {
       Road road = new Road(Direction.EAST, i);
       roads.add(road);
     }
-    addJoinPoint(step, width, height);
   }
 
 
