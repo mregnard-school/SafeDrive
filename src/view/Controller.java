@@ -2,6 +2,7 @@ package view;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -53,8 +54,10 @@ public class Controller implements PropertyChangeListener {
     iterationsLabel.setText("-");
     runButton.setDisable(true);
     stopButton.setDisable(true);
-    speedInput.setText(String.valueOf(1000));
+    speedInput.setText("1000");
     setUpListeners();
+    iterationsInput.setText("5");
+    vehiclesInput.setText("5");
   }
 
   private void setUpListeners() {
@@ -93,11 +96,24 @@ public class Controller implements PropertyChangeListener {
   }
 
   public void resetSimulation() {
-    Simulation simulation = new Simulation(Integer.valueOf(iterationsInput.getText()), grid.getWidth(), grid
-        .getHeight());
-    iterationsLabel.setText("0/" + iterationsInput.getText());
+    int iterations = Integer.parseInt(iterationsInput.getText());
+    int width = grid.getWidth();
+    int height = grid.getHeight();
+    int nbAgents = Integer.parseInt(vehiclesInput.getText());
+
+    Simulation simulation = new Simulation(iterations, width, height, nbAgents);
     loop = new Loop(simulation);
+    loop.startPause();
+
+    PropertyChangeEvent evt = new PropertyChangeEvent(
+        simulation, "simulation", null, simulation.getInitialIntents()
+    );
+
+    this.simulationUpdate(evt);
+
+    iterationsLabel.setText("0/" + iterationsInput.getText());
     loop.addPropertyChangeListener(this);
+    loop.startPause();
     new Thread(loop).start();
     stopButton.setDisable(false);
   }
@@ -126,12 +142,11 @@ public class Controller implements PropertyChangeListener {
   }
 
   private void deleteSimulation() {
-    if (loop == null) {
-      return;
+    if (loop != null) {
+      loop.interrupt();
+      loop = null;
     }
 
-    loop.interrupt();
-    loop = null;
     runButton.setText("Run");
     iterationsLabel.setText("-");
     stopButton.setDisable(true);
@@ -161,8 +176,13 @@ public class Controller implements PropertyChangeListener {
   }
 
   private void displayCurrentIteration() {
-    int totalStep = loop.getSimulation().getMaxIterations();
     String iter = iterationsLabel.getText().split("/")[0];
+
+    if ("-".equals(iter)) {
+      return;
+    }
+
+    int totalStep = loop.getSimulation().getMaxIterations();
     int iterationsCount = Integer.parseInt(iter);
     String iterations = (++iterationsCount) + "/" + totalStep;
     iterationsLabel.setText(iterations);

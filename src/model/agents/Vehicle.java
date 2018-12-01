@@ -3,9 +3,9 @@ package model.agents;
 import java.awt.Point;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Objects;
+import java.util.Queue;
 import model.communication.BroadcastInvoker;
 import model.communication.CarReceiver;
 import model.communication.Command;
@@ -21,28 +21,27 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
   private static int nbVehicles = 1;
 
   private MotionStrategy motionStrategy;
-  private BroadcastInvoker broadCast;
-  private DialogInvoker dialog;
-  private Receiver receiver;
+  transient private BroadcastInvoker broadcaster;
+  transient private DialogInvoker dialoger;
+  private CarReceiver receiver;
   private int plate;
-  private int vitesse;
+  private int speed;
   private Point currentPos;
   private Point destination;
-  private Point nexPos;
+  private Point nextPos;
   private Direction direction;
-  private List<Command> messages;
+  private Queue<Command> commands;
 
-  public Vehicle() {
-    plate = nbVehicles;
-    nbVehicles++;
-    dialog = new DialogInvoker();
-    broadCast = new BroadcastInvoker(new DialogInvoker());
+  private Vehicle() {
+    plate = nbVehicles++;
+    dialoger = new DialogInvoker();
+    broadcaster = new BroadcastInvoker(dialoger);
     receiver = new CarReceiver(this);
-    messages = new ArrayList<>();
+    commands = new LinkedList<>();
 
     try {
       InetAddress addr = InetAddress.getByName("127.0.0.1");
-      int port = ((CarReceiver) receiver).getPort();
+      int port = receiver.getPort();
       Router.registerVehicle(this, addr, port);
     } catch (UnknownHostException e) {
       e.printStackTrace();
@@ -50,41 +49,44 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   }
 
-  public Vehicle(MotionStrategy motionStrategy) {
+  public Vehicle(Point currentPos,
+      Point destination,
+      Direction direction,
+      MotionStrategy motionStrategy) {
     this();
-    setMotionStrategy(motionStrategy);
-  }
-
-  public void setMotionStrategy(MotionStrategy motionStrategy) {
+    this.currentPos = currentPos;
+    this.destination = destination;
+    this.direction = direction;
     this.motionStrategy = motionStrategy;
+    this.speed = 1;
   }
 
-  public void accelerate(int vitesse) {
-    this.vitesse += vitesse;
+  public void accelerate(int acceleration) {
+    this.speed += acceleration;
   }
 
-  public void brake(int vitesse) {
-    this.vitesse -= vitesse;
+  public void brake(int deceleration) {
+    this.speed -= deceleration;
   }
 
   public void move() {
-    nexPos = direction.position(currentPos);
+    nextPos = direction.next(currentPos);
   }
 
   @Override
   public void invoke(Command command) {
     if (command.getReceivers().size() == 1) {
-      dialog.setReceiver(command.getReceivers().get(0));
-      dialog.invoke(command);
+      dialoger.setReceiver(command.getReceivers().get(0));
+      dialoger.invoke(command);
     } else {
-      broadCast.invoke(command);
+      broadcaster.invoke(command);
     }
   }
 
   @Override
   public void receive(Command command) {
     Logger.log("Command received");
-    messages.add(command);
+    commands.add(command);
   }
 
   @Override
@@ -127,23 +129,32 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
   }
 
   @Override
-  public List<Command> getCommands() {
-    return messages;
+  public Queue<Command> getCommands() {
+    return commands;
+  }
+
+  @Override
+  public String toString() {
+    return "Vehicule= {currentPos: "+ currentPos +", destination: " + "}" +destination;
   }
 
   public int getPlate() {
     return plate;
   }
 
-  public int getVitesse() {
-    return vitesse;
-  }
-
   public Point getCurrentPos() {
     return currentPos;
   }
 
-  public Point getNexPos() {
-    return nexPos;
+  public Point getNextPos() {
+    return nextPos;
+  }
+
+  public void interrupt() {
+    receiver.interrupt();
+  }
+
+  public void log() {
+
   }
 }

@@ -1,11 +1,13 @@
 package model.agents;
 
 import java.util.List;
+import java.util.Queue;
 import model.communication.Command;
 import model.environment.Direction;
 
 public interface Agent {
-  List<Command> getCommands();
+
+  Queue<Command> getCommands();
 
   void setDirection(Direction direction);
 }
