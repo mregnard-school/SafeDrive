@@ -7,15 +7,18 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.stream.Collectors;
 import model.communication.Command;
 import model.environment.Direction;
 import model.environment.Land;
+import model.environment.Road;
 
 public class DumbMotion implements MotionStrategy {
 
 
   private Point destination;
   private Queue<Command> commands;
+  private Vehicle agent;
 
   @Override
   public void run(Vehicle agent, Land land) {
@@ -34,15 +37,19 @@ public class DumbMotion implements MotionStrategy {
     List<Point> availablePoints = getAvailablePoints();
     Optional<Point> closest = findClosestPoint(availablePoints);
     if (closest.isPresent()) {
+      agent.setNextPos(closest.get());
       //Yeah we got the closest point, we can move
     } else {
+      agent.setNextPos(agent.getCurrentPos());    //@TODO tmp
+
       //Uh oh, no points available :'(
       //We stop the car (speed = 0)
     }
   }
 
   private List<Point> getAvailablePoints() {
-    return new ArrayList<>();
+    return agent.getLand().getRoadsForPoint(agent.getCurrentPos()).map(
+        Road::getAxis).map(direction -> direction.next(agent.getCurrentPos())).collect(Collectors.toList());
   }
 
   private Optional<Point> findClosestPoint(List<Point> availablePoints) {

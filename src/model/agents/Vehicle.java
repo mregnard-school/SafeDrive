@@ -156,6 +156,10 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
     return "Vehicule= {currentPos: "+ currentPos +", destination: " + "}" +destination;
   }
 
+  public void setNextPos(Point pos) {
+    nextPos = pos;
+  }
+
 
   public Point getCurrentPos() {
     return currentPos;
