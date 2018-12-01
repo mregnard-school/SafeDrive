@@ -2,7 +2,12 @@ package model.environment;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.stream.Stream;
+import model.agents.Agent;
 import model.agents.DumbMotion;
 import model.agents.MotionStrategy;
 import model.agents.Vehicle;
@@ -16,12 +21,20 @@ public class Simulation {
   private IntentList intents;
   private Land land;
   private List<Vehicle> vehicles;
+  private int width;
+  private int height;
+  private Random random;
+  Map<Point, Agent> agentInitialPositions;
 
   public Simulation(int maxIterations, int width, int height, int nbAgent) {
-    land = new Land(width, height);
     this.maxIterations = maxIterations;
     this.currentStep = 0;
+    this.width = width;
+    this.height = height;
     vehicles = new ArrayList<>();
+    agentInitialPositions = new HashMap<>();
+    random = new Random(12);
+    land = new Land(width, height);
     createAgents(nbAgent);
   }
 
@@ -40,17 +53,42 @@ public class Simulation {
   }
 
   private void createAgent() {
-    // @todo [irindul-2018-12-01] : Change with real position
-    Point startingPosition = new Point(0, 0);
-    // @todo [irindul-2018-12-01] : Change with random destination
-    Point destination = new Point(10, 10);
-    // @todo [irindul-2018-12-01] : Change with road direction
-    Direction direction = Direction.SOUTH;
+
+    Point currentPosition = getValidPoint();
+    Point destination;
+    do {
+      destination = getValidPoint();
+    } while (destination.equals(currentPosition));
+
+    Road road = land.getRoadsForPoint(currentPosition).findFirst()
+        .orElseThrow(IllegalStateException::new);
+
+    Direction direction = road.getAxis();
     MotionStrategy movement = new DumbMotion();
 
-    Vehicle vehicle = new Vehicle(startingPosition, destination, direction, movement);
+    Vehicle vehicle = new Vehicle(currentPosition, destination, direction, movement);
+    agentInitialPositions.put(currentPosition, vehicle);
     this.vehicles.add(vehicle);
 
+  }
+
+  private Point getValidPoint() {
+    Point point;
+
+    boolean isInvalidPoint;
+    do {
+      int x = random.nextInt(width);
+      int y = random.nextInt(height);
+
+      point = new Point(x, y);
+      Stream<Road> roadStream = land.getRoadsForPoint(point);
+      boolean belongsToRoad = roadStream.findAny().isPresent();
+
+      Agent agent = agentInitialPositions.get(point);
+      isInvalidPoint = !belongsToRoad || (agent != null);
+    } while (isInvalidPoint);
+
+    return point;
   }
 
   public int getMaxIterations() {
@@ -89,4 +127,6 @@ public class Simulation {
   public void interrupt() {
     vehicles.forEach(Vehicle::interrupt);
   }
+
+
 }

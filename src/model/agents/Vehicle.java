@@ -148,4 +148,8 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
   public void interrupt() {
     receiver.interrupt();
   }
+
+  public void log() {
+
+  }
 }

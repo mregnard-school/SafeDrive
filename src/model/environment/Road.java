@@ -26,11 +26,11 @@ public class Road {
     this.position = isHorizontal() ? new Point(0, pivot) : new Point(pivot, 0) ;
   }
 
-  public boolean belongTo(Point point) {
+  public boolean contains(Point point) {
     if (isHorizontal()) {
-      return (point.x == pivot);
-    } else {
       return (point.y == pivot);
+    } else {
+      return (point.x == pivot);
     }
   }
 

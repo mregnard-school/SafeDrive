@@ -3,6 +3,8 @@ package model.environment;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import model.agents.Vehicle;
 
 public class Land {
@@ -57,5 +59,9 @@ public class Land {
 
   public List<Point> getJoins() {
     return joins;
+  }
+
+  public Stream<Road> getRoadsForPoint(Point point) {
+    return roads.stream().filter(road -> road.contains(point));
   }
 }
