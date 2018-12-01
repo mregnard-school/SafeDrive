@@ -42,7 +42,8 @@ public class CarReceiver implements Runnable, Receiver {
         this.receive(command);
 
       } catch (IOException e) {
-        e.printStackTrace();
+        //e.printStackTrace();
+        break;
       } catch (ClassNotFoundException e) {
         //Do nothing
       }
@@ -81,5 +82,6 @@ public class CarReceiver implements Runnable, Receiver {
       socket.close();
       socket = null;
     }
+    Thread.currentThread().interrupt();
   }
 }
