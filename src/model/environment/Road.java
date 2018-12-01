@@ -26,6 +26,15 @@ public class Road {
     this.position = isHorizontal() ? new Point(0, pivot) : new Point(pivot, 0) ;
   }
 
+  public boolean belongTo(Point point) {
+    if (isHorizontal()) {
+      return (point.x == pivot);
+    } else {
+      return (point.y == pivot);
+    }
+  }
+
+
   public void addExit(Point point) {
     exits.add(point);
   }
