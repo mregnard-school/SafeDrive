@@ -18,6 +18,7 @@ import model.communication.Receiver;
 import model.communication.Router;
 import model.environment.Direction;
 import model.environment.Land;
+import sun.rmi.runtime.Log;
 import util.Logger;
 
 public class Vehicle implements Agent, Runnable, Invoker, Receiver {
@@ -35,7 +36,6 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
   private Point nextPos;
   private Direction direction;
   private Queue<Command> commands;
-  private List<Command> messages;
   private Land land;
 
   private Vehicle() {
@@ -110,7 +110,7 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   @Override
   public void run() {
-    motionStrategy.run(this);
+    motionStrategy.run(this, land);
   }
 
   @Override
@@ -169,7 +169,12 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
     receiver.interrupt();
   }
 
-  public void log() {
+  public void log(String logEntry) {
+    String prefix = "Agent-" + getId() + " : ";
+    Logger.log(prefix + logEntry);
+  }
 
+  public Point getDestination() {
+    return this.destination;
   }
 }

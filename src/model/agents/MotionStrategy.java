@@ -1,8 +1,8 @@
 package model.agents;
 
-import model.environment.Direction;
+import model.environment.Land;
 
 public interface MotionStrategy {
 
-  void run(Agent agent);
+  void run(Vehicle agent, Land land);
 }
