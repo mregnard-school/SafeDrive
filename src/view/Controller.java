@@ -56,6 +56,8 @@ public class Controller implements PropertyChangeListener {
     stopButton.setDisable(true);
     speedInput.setText(String.valueOf(1000));
     setUpListeners();
+    iterationsInput.setText("5");
+    vehiclesInput.setText("5");
   }
 
   private void setUpListeners() {

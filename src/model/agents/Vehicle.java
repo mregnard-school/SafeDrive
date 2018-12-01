@@ -133,6 +133,11 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
     return commands;
   }
 
+  @Override
+  public String toString() {
+    return "Vehicule= {currentPos: "+ currentPos +", destination: " + "}" +destination;
+  }
+
   public int getPlate() {
     return plate;
   }

@@ -61,7 +61,7 @@ public class Grid {
   }
 
   public void draw(int x, int y, Color color) {
-    rectangles[x][y].setFill(color);
+    rectangles[y][x].setFill(color);
   }
 
   public void draw(Land land) {
@@ -88,9 +88,9 @@ public class Grid {
     for (int i = 0; i < nbTiles; i++) {
       Point point;
       if (road.isHorizontal()) {
-        point = new Point(position, i);
-      } else {
         point = new Point(i, position);
+      } else {
+        point = new Point(position, i);
       }
       draw(point, ROAD_COLOR);
     }
