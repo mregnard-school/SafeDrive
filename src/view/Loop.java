@@ -30,6 +30,7 @@ public class Loop implements Runnable {
     Thread.currentThread().interrupt();
     this.run = false;
     this.buffer = new LinkedList<>();
+    simulation.interrupt();
   }
 
   public void startPause() {

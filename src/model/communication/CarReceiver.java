@@ -75,4 +75,11 @@ public class CarReceiver implements Runnable, Receiver {
   public int getPort() {
     return this.port;
   }
+
+  public void interrupt() {
+    if (socket != null) {
+      socket.close();
+      socket = null;
+    }
+  }
 }

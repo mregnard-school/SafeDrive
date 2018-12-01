@@ -31,6 +31,14 @@ public class Simulation {
     }
   }
 
+  public IntentList getInitialIntents() {
+    IntentList intentList = new IntentList();
+    this.vehicles.forEach(
+        vehicle -> intentList.addIntent(vehicle, vehicle.getCurrentPos(), vehicle.getCurrentPos())
+    );
+    return intentList;
+  }
+
   private void createAgent() {
     // @todo [irindul-2018-12-01] : Change with real position
     Point startingPosition = new Point(0, 0);
@@ -76,5 +84,9 @@ public class Simulation {
 
   public Land getLand() {
     return land;
+  }
+
+  public void interrupt() {
+    vehicles.forEach(Vehicle::interrupt);
   }
 }

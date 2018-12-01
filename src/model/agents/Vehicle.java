@@ -23,6 +23,7 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
   private MotionStrategy motionStrategy;
   transient private BroadcastInvoker broadcaster;
   transient private DialogInvoker dialoger;
+  private CarReceiver receiver;
   private int plate;
   private int speed;
   private Point currentPos;
@@ -35,7 +36,7 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
     plate = nbVehicles++;
     dialoger = new DialogInvoker();
     broadcaster = new BroadcastInvoker(dialoger);
-    CarReceiver receiver = new CarReceiver(this);
+    receiver = new CarReceiver(this);
     commands = new LinkedList<>();
 
     try {
@@ -142,5 +143,9 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   public Point getNextPos() {
     return nextPos;
+  }
+
+  public void interrupt() {
+    receiver.interrupt();
   }
 }
