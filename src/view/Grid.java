@@ -11,8 +11,7 @@ import model.environment.Road;
 import util.IntentList.Intent;
 
 
-public class PanView {
-
+public class Grid {
 
   // We define here the colors
   private final Color EMPTY_COLOR = Color.WHITE;
@@ -28,7 +27,7 @@ public class PanView {
   private int width;
 
 
-  public PanView(int nbRows, int nbColumns, double width, double height) {
+  public Grid(int nbRows, int nbColumns, double width, double height) {
     this.height = nbRows;
     this.width = nbColumns;
     rectangles = new Rectangle[nbRows][nbColumns];

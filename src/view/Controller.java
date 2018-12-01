@@ -2,7 +2,6 @@ package view;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,7 +11,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import model.environment.Road;
 import model.environment.Simulation;
 import util.IntentList;
 import util.Logger;
@@ -44,7 +42,7 @@ public class Controller implements PropertyChangeListener {
   @FXML
   ListView<String> logsList;
 
-  private PanView panView;
+  private Grid grid;
 
   public Controller() {
     Logger.addPropertyChangeListener(this);
@@ -95,7 +93,8 @@ public class Controller implements PropertyChangeListener {
   }
 
   public void resetSimulation() {
-    Simulation simulation = new Simulation(Integer.valueOf(iterationsInput.getText()), panView.getWidth(), panView.getHeight());
+    Simulation simulation = new Simulation(Integer.valueOf(iterationsInput.getText()), grid.getWidth(), grid
+        .getHeight());
     iterationsLabel.setText("0/" + iterationsInput.getText());
     loop = new Loop(simulation);
     loop.addPropertyChangeListener(this);
@@ -152,11 +151,11 @@ public class Controller implements PropertyChangeListener {
   }
 
   private void simulationUpdate(PropertyChangeEvent evt) {
-    panView.clearGrid();
+    grid.clearGrid();
 
-    panView.draw(loop.getSimulation().getLand());
+    grid.draw(loop.getSimulation().getLand());
     IntentList intents = (IntentList) evt.getNewValue();
-    intents.stream().forEach(panView::draw);
+    intents.stream().forEach(grid::draw);
     displayCurrentIteration();
     checkIfFinishedAndCleanUp();
   }
@@ -183,7 +182,7 @@ public class Controller implements PropertyChangeListener {
     logsList.setItems(logs);
   }
 
-  public void setPanView(PanView panView) {
-    this.panView = panView;
+  public void setGrid(Grid grid) {
+    this.grid = grid;
   }
 }

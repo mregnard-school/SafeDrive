@@ -36,13 +36,13 @@ public class App extends Application {
       Pane rootLayout = loader.load();
       Controller controller = loader.getController();
       //GRID
-      PanView panView = new PanView(height, width, _width, _height);
-      panView.setLayout(33, 52);
-      controller.setPanView(panView);
+      Grid grid = new Grid(height, width, _width, _height);
+      grid.setLayout(33, 52);
+      controller.setGrid(grid);
 
 //      LayoutX="108.0" layoutY="68.0" prefHeight="816.0" prefWidth="862.0"
       ///
-      rootLayout.getChildren().add(panView.getPane());
+      rootLayout.getChildren().add(grid.getPane());
       Scene scene = new Scene(rootLayout, WIDTH, HEIGHT);
       stage.setScene(scene);
       stage.show();
