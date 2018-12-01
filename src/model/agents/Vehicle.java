@@ -4,8 +4,12 @@ import java.awt.Point;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.stream.Collectors;
 import model.communication.BroadcastInvoker;
 import model.communication.CarReceiver;
 import model.communication.Command;
@@ -14,6 +18,7 @@ import model.communication.Invoker;
 import model.communication.Receiver;
 import model.communication.Router;
 import model.environment.Direction;
+import model.environment.Land;
 import util.Logger;
 
 public class Vehicle implements Agent, Runnable, Invoker, Receiver {
@@ -31,6 +36,8 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
   private Point nextPos;
   private Direction direction;
   private Queue<Command> commands;
+  private List<Command> messages;
+  private Land land;
 
   private Vehicle() {
     plate = nbVehicles++;
@@ -46,7 +53,6 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
     } catch (UnknownHostException e) {
       e.printStackTrace();
     }
-
   }
 
   public Vehicle(Point currentPos,
@@ -84,7 +90,16 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
   }
 
   @Override
-  public void receive(Command command) {
+  public List<Direction> getActions() {
+    return EnumSet.allOf(Direction.class)
+        .stream().filter(direction1 -> {
+          boolean isAvailable = true; //@TODO wait for the method
+          return isAvailable;
+        }).collect(Collectors.toList());
+  }
+
+  @Override
+  public void receive(Command command) { //Get type of message (if information -> send it right away)
     Logger.log("Command received");
     commands.add(command);
   }
@@ -126,6 +141,10 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   public void setCurrentPos(Point currentPos) {
     this.currentPos = currentPos;
+  }
+
+  public Land getLand() {
+    return land;
   }
 
   @Override

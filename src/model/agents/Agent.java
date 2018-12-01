@@ -10,4 +10,6 @@ public interface Agent {
   Queue<Command> getCommands();
 
   void setDirection(Direction direction);
+
+  List<Direction> getActions();
 }
