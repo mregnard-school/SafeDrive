@@ -7,33 +7,28 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-  prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/10.0.1"
-  xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.Controller">
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.Controller">
   <children>
     <Pane fx:id="simulationPane" layoutX="1.0" prefHeight="816.0" prefWidth="698.0">
       <children>
-        <TextField fx:id="iterationsInput" layoutX="59.0" layoutY="678.0" prefHeight="60.0"
-          prefWidth="57.0"/>
-        <Label layoutX="135.0" layoutY="641.0" prefHeight="30.0" prefWidth="59.0" text="Vehicles"/>
-        <TextField fx:id="vehiclesInput" layoutX="136.0" layoutY="678.0" prefHeight="60.0"
-          prefWidth="57.0"/>
-        <Label layoutX="58.0" layoutY="641.0" prefHeight="30.0" prefWidth="117.0"
-          text="Iterations"/>
-        <Button fx:id="runButton" layoutX="214.0" layoutY="677.0" mnemonicParsing="false"
-          onAction="#runSimulation" prefHeight="64.0" prefWidth="111.0" text="Run"/>
-        <Button fx:id="stopButton" layoutX="349.0" layoutY="677.0" mnemonicParsing="false" onAction="#stopSimulation"
-          prefHeight="64.0" prefWidth="120.0" text="Stop"/>
-        <Label layoutX="485.0" layoutY="700.0" text="Iteration : "/>
-        <Label fx:id="iterationsLabel" layoutX="548.0" layoutY="701.0"/>
+        <TextField fx:id="iterationsInput" layoutX="77.0" layoutY="696.0" prefHeight="27.0" prefWidth="62.0" />
+        <Label layoutX="158.0" layoutY="695.0" prefHeight="30.0" prefWidth="62.0" text="Vehicles :" />
+        <TextField fx:id="vehiclesInput" layoutX="224.0" layoutY="697.0" prefHeight="27.0" prefWidth="50.0" />
+        <Label layoutX="8.0" layoutY="694.0" prefHeight="30.0" prefWidth="74.0" text="Iterations : " />
+        <Button fx:id="runButton" layoutX="344.0" layoutY="695.0" mnemonicParsing="false" onAction="#runSimulation" prefHeight="30.0" prefWidth="62.0" text="Run" />
+        <Button fx:id="stopButton" layoutX="417.0" layoutY="695.0" mnemonicParsing="false" onAction="#stopSimulation" prefHeight="30.0" prefWidth="47.0" text="Stop" />
+        <Label layoutX="485.0" layoutY="700.0" text="Iteration : " />
+        <Label fx:id="iterationsLabel" layoutX="548.0" layoutY="701.0" />
+            <Label layoutX="20.0" layoutY="748.0" text="Speed : " />
+            <TextField fx:id="speedInput" layoutX="77.0" layoutY="743.0" prefHeight="27.0" prefWidth="62.0" />
       </children>
     </Pane>
-    <AnchorPane fx:id="logPane" layoutX="616.0" layoutY="52.0" minHeight="0.0" minWidth="0.0"
-      prefHeight="693.0" prefWidth="353.0">
+    <AnchorPane fx:id="logPane" layoutX="616.0" layoutY="52.0" minHeight="0.0" minWidth="0.0" prefHeight="693.0" prefWidth="353.0">
       <children>
         <ScrollPane layoutY="-5.0" prefHeight="700.0" prefWidth="358.0">
           <content>
-            <ListView fx:id="logsList" prefHeight="699.0" prefWidth="339.0"/>
+            <ListView fx:id="logsList" prefHeight="699.0" prefWidth="339.0" />
           </content>
         </ScrollPane>
       </children>

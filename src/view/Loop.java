@@ -13,6 +13,7 @@ public class Loop implements Runnable {
   private boolean run;
   private PropertyChangeSupport support;
   private Queue<IntentList> buffer;
+  private int speed = 1000;
 
   public Loop(Simulation simulation) {
     this.simulation = simulation;
@@ -59,7 +60,7 @@ public class Loop implements Runnable {
 
         long loopTime = System.currentTimeMillis();
 
-        if (loopTime - currentTime > 1000) {
+        if (loopTime - currentTime > speed) {
           draw();
           currentTime = loopTime;
         }
@@ -81,5 +82,9 @@ public class Loop implements Runnable {
 
   public Simulation getSimulation() {
     return this.simulation;
+  }
+
+  public void setSpeed(int speed) {
+    this.speed = speed;
   }
 }

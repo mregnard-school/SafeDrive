@@ -30,6 +30,9 @@ public class Controller implements PropertyChangeListener {
   TextField vehiclesInput;
 
   @FXML
+  TextField speedInput;
+
+  @FXML
   Button runButton;
 
   @FXML
@@ -52,6 +55,7 @@ public class Controller implements PropertyChangeListener {
     iterationsLabel.setText("-");
     runButton.setDisable(true);
     stopButton.setDisable(true);
+    speedInput.setText(String.valueOf(1000));
     setUpListeners();
   }
 
@@ -60,15 +64,25 @@ public class Controller implements PropertyChangeListener {
       if ("".equals(newValue)) {
         runButton.setDisable(true);
       } else {
-
         if (ensureInteger(iterationsInput, newValue)) {
           runButton.setDisable(false);
         }
       }
     });
-    vehiclesInput.textProperty().addListener((
+    vehiclesInput.textProperty().addListener(
         (observable, oldValue, newValue) -> ensureInteger(vehiclesInput, newValue)
-    ));
+    );
+    speedInput.textProperty().addListener(
+        (observable, oldValue, newValue) -> {
+          if(ensureInteger(speedInput, newValue)) {
+            int speed = Integer.parseInt(newValue);
+            if(speed < 200) {
+              speed = 200;
+            }
+            loop.setSpeed(speed);
+          }
+        }
+    );
   }
 
   private boolean ensureInteger(TextField input, String value) {
