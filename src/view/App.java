@@ -19,16 +19,16 @@ public class App extends Application {
   public void start(Stage primaryStage) {
     this.stage = primaryStage;
     stage.setTitle("SafeDrive");
-    this.initGrid(80, 80);
+    this.initGrid(30, 20);
   }
 
   public static void main(String[] args) {
     launch(args);
   }
 
-  public void initGrid(int y, int x) {
-    double height =  HEIGHT_GRID/ (double) y;
-    double width = WIDTH_GRID / (double) x;
+  public void initGrid(int height, int width) {
+    double _height =  HEIGHT_GRID/ (double) height;
+    double _width = WIDTH_GRID / (double) width;
     try {
       // Load root layout from fxml file.
       FXMLLoader loader = new FXMLLoader();
@@ -36,7 +36,7 @@ public class App extends Application {
       Pane rootLayout = loader.load();
       Controller controller = loader.getController();
       //GRID
-      PanView panView = new PanView(y, x, width, height);
+      PanView panView = new PanView(height, width, _width, _height);
       panView.setLayout(33, 52);
       controller.setPanView(panView);
 

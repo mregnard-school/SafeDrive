@@ -12,9 +12,15 @@ public class Simulation {
 
   private int maxIterations;
   private int currentStep;
-  private IntentList intents; 
+  private IntentList intents;
+  private Land land;
+  private int width;
+  private int height;
 
-  public Simulation(int maxIterations) {
+  public Simulation(int maxIterations, int width, int height) {
+    this.width = width;
+    this.height = height;
+    land = new Land(width, height);
     this.maxIterations = maxIterations;
     this.currentStep = 0;
   }
@@ -58,4 +64,17 @@ public class Simulation {
   public IntentList getIntents() {
     return this.intents;
   }
+
+  public Land getLand() {
+    return land;
+  }
+
+  public void setWidth(int width) {
+    this.width = width;
+  }
+
+  public void setHeight(int height) {
+    this.height = height;
+  }
+
 }
