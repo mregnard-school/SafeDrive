@@ -116,6 +116,7 @@ public class Simulation {
     vehicles.forEach(vehicle -> {
       vehicle.run();
       Point next = vehicle.getNextPos();
+      // @todo [irindul-2018-12-02] : Send multiple intents for same agent
       intents.addIntent(land.move(vehicle, next));
     });
     Logger.log("Finished stepped " + currentStep);
