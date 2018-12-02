@@ -32,7 +32,7 @@ public class Land {
     for (int i = 0; i < width; i += step) {
       roads.add(new Road(Direction.SOUTH, i));
       if (i + 1 < width) {
-        roads.add(new Road(Direction.NORTH, i));
+        roads.add(new Road(Direction.NORTH, i + 1));
       }
     }
   }
@@ -41,7 +41,7 @@ public class Land {
     for (int i = 0; i < height; i += step) {
       roads.add(new Road(Direction.EAST, i));
       if (i + 1 < height) {
-        roads.add(new Road(Direction.WEST, i));
+        roads.add(new Road(Direction.WEST, i + 1));
       }
     }
   }
