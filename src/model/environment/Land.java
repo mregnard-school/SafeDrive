@@ -91,8 +91,6 @@ public class Land {
   }
 
   public Optional<Vehicle> getVehicleAt(Point point) {
-    // @todo [irindul-2018-12-02] : Might be buggy (Says there is someone where he isn't
-    // @todo [irindul-2018-12-02] : Might come from roads that are not updated
     return getRoadsForPoint(point)
         .filter(road -> road.getVehicleAt(point).isPresent())
         .map(road -> road.getVehicleAt(point).get())
