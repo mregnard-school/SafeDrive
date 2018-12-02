@@ -79,7 +79,10 @@ public class Controller implements PropertyChangeListener {
             if(speed < 200) {
               speed = 200;
             }
-            loop.setSpeed(speed);
+            speedInput.setText(String.valueOf(speed));
+            if (loop != null) {
+              loop.setSpeed(speed);
+            }
           }
         }
     );
@@ -102,6 +105,7 @@ public class Controller implements PropertyChangeListener {
 
     Simulation simulation = new Simulation(iterations, width, height, nbAgents);
     loop = new Loop(simulation);
+    loop.setSpeed(Integer.parseInt(speedInput.getText()));
     loop.startPause();
 
     PropertyChangeEvent evt = new PropertyChangeEvent(
