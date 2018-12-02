@@ -104,18 +104,6 @@ public class Land {
         .forEach(road -> road.addVehicle(vehicle.getCurrentPos(), vehicle));
   }
 
-//  public List<Road> getRoadAround(Road road, Point point) {
-//    List<Road> roads = new ArrayList<>();
-//    if (road.isHorizontal()) {
-//      roads.addAll(getRoadsForPoint(Direction.NORTH.next(point)).collect(Collectors.toList()));
-//      roads.addAll(getRoadsForPoint(Direction.SOUTH.next(point)).collect(Collectors.toList()));
-//    } else {
-//      roads.addAll(getRoadsForPoint(Direction.EAST.next(point)).collect(Collectors.toList()));
-//      roads.addAll(getRoadsForPoint(Direction.WEST.next(point)).collect(Collectors.toList()));
-//    }
-//    return roads;
-//  }
-
   public List<Point> roadExit(Road road, Point point) {
     List<Point> points = new ArrayList<>();
     Point first = null;
