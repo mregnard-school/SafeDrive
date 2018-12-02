@@ -40,7 +40,7 @@ public class Land {
   public void createHorizontalRoads(int step) {
     for (int i = 0; i < height; i += step) {
       roads.add(new Road(Direction.EAST, i));
-      if (i + 1 < width) {
+      if (i + 1 < height) {
         roads.add(new Road(Direction.WEST, i));
       }
     }

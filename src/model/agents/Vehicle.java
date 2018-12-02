@@ -16,6 +16,7 @@ import model.communication.DialogInvoker;
 import model.communication.Invoker;
 import model.communication.Receiver;
 import model.communication.Router;
+import model.communication.message.RequestInformation;
 import model.environment.Direction;
 import model.environment.Land;
 import util.Logger;
@@ -102,6 +103,10 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
   @Override
   public void receive(Command command) { //Get type of message (if information -> send it right away)
     Logger.log("Command received");
+    command.execute();
+    if (command instanceof RequestInformation) {    //we don't need to store
+      return;
+    }
     commands.add(command);
   }
 

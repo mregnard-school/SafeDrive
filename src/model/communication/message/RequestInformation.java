@@ -3,12 +3,13 @@ package model.communication.message;
 import java.util.ArrayList;
 import java.util.List;
 import model.agents.Vehicle;
+import model.communication.Invoker;
 import model.communication.Receiver;
 
 public class RequestInformation extends Message {
 
-  public RequestInformation(List<Receiver> receivers, Type type, Priority priority) {
-    super(receivers, priority);
+  public RequestInformation(Invoker author, List<Receiver> receivers, Type type, Priority priority) {
+    super(author, receivers, priority);
   }
 
   @Override
@@ -19,7 +20,7 @@ public class RequestInformation extends Message {
       }
       Vehicle vehicle = (Vehicle) receiver;
       List<Receiver> destinataires = new ArrayList<>();
-      vehicle.invoke(new Information(destinataires, Priority.LOW));
+      vehicle.invoke(new Information(vehicle, destinataires, Priority.LOW));
     });
   }
 }
