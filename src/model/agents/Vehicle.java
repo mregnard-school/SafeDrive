@@ -189,4 +189,12 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
   public Point getDestination() {
     return this.destination;
   }
+
+  public boolean isArrived() {
+    if (this.currentPos.equals(destination)) {
+      log("is arrived !");
+      return true;
+    }
+    return false;
+  }
 }

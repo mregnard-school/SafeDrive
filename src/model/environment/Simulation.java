@@ -12,7 +12,6 @@ import model.agents.DumbMotion;
 import model.agents.MotionStrategy;
 import model.agents.Vehicle;
 import util.IntentList;
-import util.Logger;
 
 public class Simulation {
 
@@ -42,14 +41,6 @@ public class Simulation {
     for (int i = 0; i < nbAgent; i++) {
       createAgent();
     }
-  }
-
-  public IntentList getInitialIntents() {
-    IntentList intentList = new IntentList();
-    this.vehicles.forEach(
-        vehicle -> intentList.addIntent(vehicle, vehicle.getCurrentPos(), vehicle.getCurrentPos())
-    );
-    return intentList;
   }
 
   private void createAgent() {
@@ -113,13 +104,27 @@ public class Simulation {
     }
     step();
 
+    List<Vehicle> remaining = new ArrayList<>();
+
+    // @todo [irindul-2018-12-02] : Handle problem with blocked car (no available points for it)
+    // @todo [irindul-2018-12-02] : Handle problem with available tile marked as unavalaible
+
     vehicles.forEach(vehicle -> {
       vehicle.run();
       Point next = vehicle.getNextPos();
       // @todo [irindul-2018-12-02] : Send multiple intents for same agent
       intents.addIntent(land.move(vehicle, next));
+
+      if (vehicle.isArrived()) {
+        land.getRoadsForPoint(vehicle.getCurrentPos())
+            .forEach(road -> road.removeVehicle(vehicle));
+        vehicle.interrupt();
+      } else {
+        remaining.add(vehicle);
+      }
     });
-    Logger.log("Finished stepped " + currentStep);
+
+    vehicles = remaining;
   }
 
   public boolean hasNext() {
@@ -138,5 +143,12 @@ public class Simulation {
     vehicles.forEach(Vehicle::interrupt);
   }
 
+  public IntentList getInitialIntents() {
+    IntentList intentList = new IntentList();
+    this.vehicles.forEach(
+        vehicle -> intentList.addIntent(vehicle, vehicle.getCurrentPos(), vehicle.getCurrentPos())
+    );
+    return intentList;
+  }
 
 }
