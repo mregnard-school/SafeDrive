@@ -31,11 +31,9 @@ public class DumbMotion implements MotionStrategy {
 
     //@TODO REMOVE DEBUG    THIS FUCKING CAR NEED TO TURN AROUND
     if (agent.getId() == 19) {
-      System.out.println("Fucking car");
-      System.out.println(availablePoints);
+      //System.out.println("Fucking car");
+      //System.out.println(availablePoints);
     }
-
-
 
     Optional<List<Point>> answers = analyzeMessage();
     if (answers.isPresent()) {      //if there is an answer, we remove the points available
@@ -73,21 +71,22 @@ public class DumbMotion implements MotionStrategy {
   }
 
   private List<Point> getAvailablePoints() {
-    List<Point> points =  agent
+    List<Point> points = agent
         .getLand()
         .getRoadsForPoint(agent.getCurrentPos())
         .map(Road::getAxis)
         .map(direction -> direction.next(agent.getCurrentPos()))
-        .filter(point -> point.y > -1 && point.x > 0 && point.y < agent.getLand().getHeight() && point.x < agent.getLand().getWidth() )
+        .filter(point -> point.y > -1 && point.x > 0 && point.y < agent.getLand().getHeight()
+            && point.x < agent.getLand().getWidth())
         .collect(Collectors.toList());
     //Now we get oghter points around cause sometime u have to turn around
     List<Road> roads = agent
         .getLand()
         .getRoadsForPoint(agent.getCurrentPos())
         .collect(Collectors.toList());
-    agent
-        .getLand()
-        .roadExit(roads.get(0), agent.getCurrentPos()); //We take the first one because there should @TODO here to pass someone
+
+    //We take the first one because there should @TODO here to pass someonex
+    agent.getLand().roadExit(roads.get(0), agent.getCurrentPos());
 
     return points;
   }

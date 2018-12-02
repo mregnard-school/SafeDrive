@@ -3,7 +3,6 @@ package model.agents;
 import java.awt.Point;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -11,11 +10,11 @@ import java.util.Queue;
 import java.util.stream.Collectors;
 import model.communication.BroadcastInvoker;
 import model.communication.CarReceiver;
-import model.communication.message.Command;
 import model.communication.DialogInvoker;
 import model.communication.Invoker;
 import model.communication.Receiver;
 import model.communication.Router;
+import model.communication.message.Command;
 import model.communication.message.RequestInformation;
 import model.environment.Direction;
 import model.environment.Land;
@@ -28,7 +27,7 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   private transient MotionStrategy motionStrategy;
   transient private BroadcastInvoker broadcaster;
-  transient private DialogInvoker dialoger;
+  private transient DialogInvoker dialoger;
   private CarReceiver receiver;
   private int id;
   private int speed;
@@ -84,9 +83,12 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   @Override
   public void invoke(Command command) {
-    if (command.getReceivers().isEmpty()) {
+    if (command.getReceivers().size() > 1) {
       broadcaster.invoke(command);
-    } else {
+    } else if (command.getReceivers().size() == 1) {
+      if (dialoger == null) {
+        dialoger = new DialogInvoker();
+      }
       dialoger.setReceiver(command.getReceivers().get(0));    //@TODO fix bug: got Exception in thread "Thread-12" java.lang.NullPointerException WTF
       dialoger.invoke(command);
     }
@@ -99,7 +101,7 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   @Override
   public void receive(Command command) { //Get type of message (if information -> send it right away)
-    Logger.log("Command received:" + command.toString());
+    //Logger.log("Command received:" + command.toString());
     command.execute();
     if (command instanceof RequestInformation) {    //we don't need to store
       return;

@@ -2,7 +2,6 @@ package view;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -56,7 +55,7 @@ public class Controller implements PropertyChangeListener {
     stopButton.setDisable(true);
     speedInput.setText("1000");
     setUpListeners();
-    iterationsInput.setText("5");
+    iterationsInput.setText("1");
     vehiclesInput.setText("25");
   }
 

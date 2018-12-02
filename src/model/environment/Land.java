@@ -27,6 +27,7 @@ public class Land {
     this.width = width;
     this.height = height;
     createRoads(5);
+    //Logger.l
   }
 
   public void createRoads(int step) {
@@ -78,23 +79,23 @@ public class Land {
     Optional<Vehicle> block = getVehiculeAt(next);
     if (block.isPresent()) {
       //@TODO maybe it's not the best solution but meh
-      List<Receiver> destinataires = Collections.singletonList(block.get());
+      List<Receiver> receivers = Collections.singletonList(block.get());
       RequestInformation requestInformation = new RequestInformation(
           vehicle,
-          destinataires,
+          receivers,
           Priority.MEDIUM);
       //We send request for more information
-//      vehicle.invoke(requestInformation);
+      vehicle.invoke(requestInformation);
       RequestMove requestMove = new RequestMove(
           vehicle,
-          destinataires,
+          receivers,
           Priority.MEDIUM);
-//      vehicle.invoke(requestMove);
+      vehicle.invoke(requestMove);
       return new Intent(vehicle.getCurrentPos(), vehicle.getCurrentPos(), vehicle);
     }
 
     Point currentPos = vehicle.getCurrentPos();
-    vehicle.log("moved from " + currentPos + " to " + next);
+    //vehicle.log("moved from " + currentPos + " to " + next);
     Intent intent = new Intent(currentPos, next, vehicle);
     getRoadsForPoint(currentPos).forEach(road -> road.removeVehicle(vehicle));
     getRoadsForPoint(next).forEach(road -> road.addVehicle(vehicle));

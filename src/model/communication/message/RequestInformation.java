@@ -14,9 +14,9 @@ public class RequestInformation extends Message {
 
   @Override
   public void execute() {
-    System.out.println("dans request informations");
+    //System.out.println("dans request informations");
 
-    System.out.println(this);
+    //System.out.println(this);
     receivers.forEach(receiver -> {
       if (!(receiver instanceof Vehicle)) {
         return;

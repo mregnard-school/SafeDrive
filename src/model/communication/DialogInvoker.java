@@ -12,7 +12,7 @@ import model.communication.message.Command;
 
 public class DialogInvoker implements Invoker {
 
-  transient private DatagramSocket socket;
+  private DatagramSocket socket;
   private Receiver receiver;
 
   public DialogInvoker() {

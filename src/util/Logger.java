@@ -27,7 +27,7 @@ public class Logger {
   public static void log(String logEntry) {
     logs.add(logEntry);
     support.firePropertyChange("logs", logs, logEntry);
-    System.out.println(logEntry);
+    //System.out.println(logEntry);
 
   }
 }
