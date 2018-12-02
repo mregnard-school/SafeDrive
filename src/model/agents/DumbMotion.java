@@ -1,16 +1,15 @@
 package model.agents;
 
 import java.awt.Point;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.stream.Collectors;
 import model.communication.message.Command;
-import model.communication.message.Message;
-import model.environment.Direction;
+import model.communication.message.RequestMove;
 import model.environment.Land;
 import model.environment.Road;
 
@@ -26,14 +25,22 @@ public class DumbMotion implements MotionStrategy {
     this.agent = agent;
     commands = agent.getCommands();
 
-    List<Direction> answers = analyzeMessage();
-    if (!answers.isEmpty()) {
-      //@todo Do something with this directions
-    }
-
     //@todo send request
 
     List<Point> availablePoints = getAvailablePoints();
+
+    //@TODO REMOVE DEBUG    THIS FUCKING CAR NEED TO TURN AROUND
+    if (agent.getId() == 19) {
+      System.out.println("Fucking car");
+      System.out.println(availablePoints);
+    }
+
+
+
+    Optional<List<Point>> answers = analyzeMessage();
+    if (answers.isPresent()) {      //if there is an answer, we remove the points available
+      availablePoints = removeCommonPoints(availablePoints, answers.get());
+    }
     Optional<Point> closest = findClosestPoint(availablePoints);
     if (closest.isPresent()) {
       agent.setNextPos(closest.get());
@@ -46,9 +53,43 @@ public class DumbMotion implements MotionStrategy {
     }
   }
 
+  private List<Point> removeCommonPoints(List<Point> availablePoints,
+      List<Point> answers) {
+
+    List<Point> tmp = availablePoints;
+//    List<Point> newPoints = availablePoints
+//        .stream()
+//        .filter(point -> answers
+//            .stream()
+//            .noneMatch(answer -> answer.equals(point)))
+//        .collect(Collectors.toList());
+
+    answers.forEach(point -> {
+      if (!tmp.isEmpty()) {
+        tmp.remove(point);
+      }
+    });
+    return tmp.stream().filter(Objects::nonNull).collect(Collectors.toList());
+  }
+
   private List<Point> getAvailablePoints() {
-    return agent.getLand().getRoadsForPoint(agent.getCurrentPos()).map(
-        Road::getAxis).map(direction -> direction.next(agent.getCurrentPos())).collect(Collectors.toList());
+    List<Point> points =  agent
+        .getLand()
+        .getRoadsForPoint(agent.getCurrentPos())
+        .map(Road::getAxis)
+        .map(direction -> direction.next(agent.getCurrentPos()))
+        .filter(point -> point.y > -1 && point.x > 0 && point.y < agent.getLand().getHeight() && point.x < agent.getLand().getWidth() )
+        .collect(Collectors.toList());
+    //Now we get oghter points around cause sometime u have to turn around
+    List<Road> roads = agent
+        .getLand()
+        .getRoadsForPoint(agent.getCurrentPos())
+        .collect(Collectors.toList());
+    agent
+        .getLand()
+        .roadExit(roads.get(0), agent.getCurrentPos()); //We take the first one because there should @TODO here to pass someone
+
+    return points;
   }
 
   private Optional<Point> findClosestPoint(List<Point> availablePoints) {
@@ -64,16 +105,18 @@ public class DumbMotion implements MotionStrategy {
     return Optional.of(closest);
   }
 
-  private List<Direction> analyzeMessage() {
-    List<Direction> answers = new ArrayList<>();
-    List<Message> messages =  commands.stream().map(command -> {
-      return (Message) command;
-    }).collect(Collectors.toList());
+  private Optional<List<Point>> analyzeMessage() {
+//    List<Message> messages =  commands.stream().map(command -> (Message) command).collect(Collectors.toList());
+//    System.out.println(commands);
     if (commands.isEmpty()) {
-      return answers;
-    } else {
-      return answers;
+      return Optional.empty();
     }
+    return Optional.of(commands.stream().map(command -> {
+      RequestMove message = (RequestMove) command;
+      return message.getGoal();
+    }).collect(Collectors.toList()));
+//    messages
+//    List<Direction> answers = new ArrayList<>();
   }
 
 

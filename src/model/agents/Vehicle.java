@@ -19,13 +19,14 @@ import model.communication.Router;
 import model.communication.message.RequestInformation;
 import model.environment.Direction;
 import model.environment.Land;
+import model.environment.Road;
 import util.Logger;
 
 public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   private static int nbVehicles = 1;
 
-  private MotionStrategy motionStrategy;
+  private transient MotionStrategy motionStrategy;
   transient private BroadcastInvoker broadcaster;
   transient private DialogInvoker dialoger;
   private CarReceiver receiver;
@@ -36,7 +37,7 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
   private Point nextPos;
   private Direction direction;
   private Queue<Command> commands;
-  private Land land;
+  private transient Land land; //Need to put that cause Optional which is in Land > Road is not serializable
 
   private Vehicle() {
     id = nbVehicles++;
@@ -83,26 +84,22 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   @Override
   public void invoke(Command command) {
-    if (command.getReceivers().size() == 1) {
-      dialoger.setReceiver(command.getReceivers().get(0));
-      dialoger.invoke(command);
-    } else {
+    if (command.getReceivers().isEmpty()) {
       broadcaster.invoke(command);
+    } else {
+      dialoger.setReceiver(command.getReceivers().get(0));    //@TODO fix bug: got Exception in thread "Thread-12" java.lang.NullPointerException WTF
+      dialoger.invoke(command);
     }
   }
 
   @Override
   public List<Direction> getActions() {
-    return EnumSet.allOf(Direction.class)
-        .stream().filter(direction1 -> {
-          boolean isAvailable = true; //@TODO wait for the method
-          return isAvailable;
-        }).collect(Collectors.toList());
+    return land.getRoadsForPoint(currentPos).map(Road::getAxis).collect(Collectors.toList());
   }
 
   @Override
   public void receive(Command command) { //Get type of message (if information -> send it right away)
-    Logger.log("Command received");
+    Logger.log("Command received:" + command.toString());
     command.execute();
     if (command instanceof RequestInformation) {    //we don't need to store
       return;
@@ -167,7 +164,9 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
     nextPos = pos;
   }
 
-
+  public int getSpeed() {
+    return speed;
+  }
   public Point getCurrentPos() {
     return currentPos;
   }
