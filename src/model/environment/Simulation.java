@@ -121,7 +121,6 @@ public class Simulation {
     Logger.log("Finished stepped " + currentStep);
   }
 
-
   public boolean hasNext() {
     return getCurrentStep() < getMaxIterations();
   }
