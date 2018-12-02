@@ -3,20 +3,18 @@ package model.environment;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import model.agents.Vehicle;
+import util.Intent;
 
 public class Land {
 
-  private List<Vehicle> agents;
   private List<Road> roads;
   private List<Point> joins;
   private int width;
   private int height;
 
   public Land(int width, int height) {
-    agents = new ArrayList<>();
     roads = new ArrayList<>();
     joins = new ArrayList<>();
     this.width = width;
@@ -67,5 +65,30 @@ public class Land {
 
   public Stream<Road> getRoadsForPoint(Point point) {
     return roads.stream().filter(road -> road.contains(point));
+  }
+
+  public Intent move(Vehicle vehicle, Point next) {
+    if (!isAvailable(next)) {
+      return new Intent(vehicle.getCurrentPos(), vehicle.getCurrentPos(), vehicle);
+    }
+
+    Point currentPos = vehicle.getCurrentPos();
+    vehicle.log("moved from " + currentPos + " to " + next);
+    Intent intent = new Intent(currentPos, next, vehicle);
+    getRoadsForPoint(currentPos).forEach(road -> road.removeVehicle(vehicle));
+    getRoadsForPoint(next).forEach(road -> road.addVehicle(vehicle));
+    vehicle.move();
+
+    return intent;
+  }
+
+  private boolean isAvailable(Point point) {
+    return getRoadsForPoint(point)
+        .noneMatch(road -> road.getVehicleAt(point).isPresent());
+  }
+
+  public void updateRoadsFor(Vehicle vehicle) {
+    getRoadsForPoint(vehicle.getCurrentPos())
+        .forEach(road -> road.addVehicle(vehicle));
   }
 }

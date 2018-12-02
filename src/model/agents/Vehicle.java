@@ -3,8 +3,8 @@ package model.agents;
 import java.awt.Point;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.LinkedList;
 import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
@@ -18,7 +18,6 @@ import model.communication.Receiver;
 import model.communication.Router;
 import model.environment.Direction;
 import model.environment.Land;
-import sun.rmi.runtime.Log;
 import util.Logger;
 
 public class Vehicle implements Agent, Runnable, Invoker, Receiver {
@@ -57,13 +56,15 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
   public Vehicle(Point currentPos,
       Point destination,
       Direction direction,
-      MotionStrategy motionStrategy) {
+      MotionStrategy motionStrategy,
+      Land land) {
     this();
     this.currentPos = currentPos;
     this.destination = destination;
     this.direction = direction;
     this.motionStrategy = motionStrategy;
     this.speed = 1;
+    this.land = land;
   }
 
   public void accelerate(int acceleration) {
@@ -75,7 +76,8 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
   }
 
   public void move() {
-    nextPos = direction.next(currentPos);
+    this.currentPos = nextPos;
+    nextPos = null;
   }
 
   @Override

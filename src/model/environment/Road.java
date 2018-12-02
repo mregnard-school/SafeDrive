@@ -48,6 +48,9 @@ public class Road {
   }
 
   public Optional<Vehicle> getVehicleAt(Point point) {
+    if (!vehicles.containsKey(point)) {
+      return Optional.empty();
+    }
     return vehicles.get(point);
   }
 
@@ -81,5 +84,10 @@ public class Road {
 
   public int getPivot() {
     return pivot;
+  }
+
+  @Override
+  public String toString() {
+    return "road: " + pivot + " " + getAxis();
   }
 }

@@ -53,7 +53,6 @@ public class Simulation {
   }
 
   private void createAgent() {
-
     Point currentPosition = getValidPoint();
     Point destination;
     do {
@@ -66,29 +65,33 @@ public class Simulation {
     Direction direction = road.getAxis();
     MotionStrategy movement = new DumbMotion();
 
-    Vehicle vehicle = new Vehicle(currentPosition, destination, direction, movement);
+    Vehicle vehicle = new Vehicle(currentPosition, destination, direction, movement, land);
     agentInitialPositions.put(currentPosition, vehicle);
     this.vehicles.add(vehicle);
-
+    land.updateRoadsFor(vehicle);
   }
 
   private Point getValidPoint() {
     Point point;
-
     boolean isInvalidPoint;
     do {
-      int x = random.nextInt(width);
-      int y = random.nextInt(height);
-
-      point = new Point(x, y);
-      Stream<Road> roadStream = land.getRoadsForPoint(point);
-      boolean belongsToRoad = roadStream.findAny().isPresent();
-
-      Agent agent = agentInitialPositions.get(point);
-      isInvalidPoint = !belongsToRoad || (agent != null);
+      point = getRandomPoint();
+      isInvalidPoint = checkPointValidity(point);
     } while (isInvalidPoint);
 
     return point;
+  }
+
+  private Point getRandomPoint() {
+    return new Point(random.nextInt(width), random.nextInt(height));
+  }
+
+  private boolean checkPointValidity(Point point) {
+    Stream<Road> roadStream = land.getRoadsForPoint(point);
+    boolean belongsToRoad = roadStream.findAny().isPresent();
+    Agent agent = agentInitialPositions.get(point);
+    boolean isNullAgent = (agent == null);
+    return !(belongsToRoad && isNullAgent);
   }
 
   public int getMaxIterations() {
@@ -109,8 +112,15 @@ public class Simulation {
       return;
     }
     step();
+
+    vehicles.forEach(vehicle -> {
+      vehicle.run();
+      Point next = vehicle.getNextPos();
+      intents.addIntent(land.move(vehicle, next));
+    });
     Logger.log("Finished stepped " + currentStep);
   }
+
 
   public boolean hasNext() {
     return getCurrentStep() < getMaxIterations();

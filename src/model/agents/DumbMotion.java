@@ -16,8 +16,6 @@ import model.environment.Road;
 
 public class DumbMotion implements MotionStrategy {
 
-
-  private Point destination;
   private Queue<Command> commands;
   private Vehicle agent;
 
@@ -25,7 +23,7 @@ public class DumbMotion implements MotionStrategy {
   public void run(Vehicle agent, Land land) {
 
     //Set environement + Agent variable
-    this.destination = agent.getDestination();
+    this.agent = agent;
     commands = agent.getCommands();
 
     List<Direction> answers = analyzeMessage();
@@ -59,7 +57,8 @@ public class DumbMotion implements MotionStrategy {
     }
 
     Point closest = Collections.min(
-        availablePoints, Comparator.comparing(point -> getManhatanDistance(point, destination))
+        availablePoints,
+        Comparator.comparing(point -> getManhatanDistance(point, agent.getDestination()))
     );
 
     return Optional.of(closest);

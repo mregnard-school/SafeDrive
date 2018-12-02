@@ -11,7 +11,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import model.environment.Land;
 import model.environment.Road;
-import util.IntentList.Intent;
+import util.Intent;
 
 
 public class Grid {
