@@ -106,8 +106,8 @@ public class Land {
 
   public List<Point> roadExit(Road road, Point point) {
     List<Point> points = new ArrayList<>();
-    Point first = null;
-    Point second = null;
+    Point first;
+    Point second;
     if (road.isHorizontal()) {
       first = Direction.NORTH.next(point);
       second = Direction.SOUTH.next(point);
