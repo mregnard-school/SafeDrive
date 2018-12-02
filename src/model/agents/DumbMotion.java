@@ -1,6 +1,7 @@
 package model.agents;
 
 import static util.PointOperations.getManhatanDistance;
+import static util.PointOperations.pointToString;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ public class DumbMotion implements MotionStrategy {
       return;
     }
 
+    vehicle.get().log("is blocking " + agent.getId() + "at " + pointToString(closest.get()));
     sendRequest(vehicle.get());
 
     //We're block so me wait
@@ -80,16 +82,10 @@ public class DumbMotion implements MotionStrategy {
   }
 
   private List<Point> analyzeMessage() {
-    List<Point> points = new ArrayList<>();
-
-    if (commands.isEmpty()) {
-      return points;
-    }
-
-    return (commands.stream().map(command -> {
-      RequestMove message = (RequestMove) command;
-      return message.getGoal();
-    }).collect(Collectors.toList()));
+    return commands.stream()
+        .map(command -> (RequestMove) command)
+        .map(RequestMove::getGoal)
+        .collect(Collectors.toList());
   }
 
   private void removeRequestedPoints(List<Point> answers) {

@@ -117,7 +117,7 @@ public class Simulation {
 
       if (vehicle.isArrived()) {
         land.getRoadsForPoint(vehicle.getCurrentPos())
-            .forEach(road -> road.removeVehicle(vehicle));
+            .forEach(road -> road.removeVehicle(vehicle.getCurrentPos()));
         vehicle.interrupt();
       } else {
         remaining.add(vehicle);

@@ -1,5 +1,7 @@
 package model.agents;
 
+import static util.PointOperations.pointToString;
+
 import java.awt.Point;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -66,6 +68,7 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
     this.motionStrategy = motionStrategy;
     this.speed = 1;
     this.land = land;
+    this.log(pointToString(destination));
   }
 
   public void accelerate(int acceleration) {

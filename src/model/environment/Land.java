@@ -78,8 +78,8 @@ public class Land {
     Point currentPos = vehicle.getCurrentPos();
     //vehicle.log("moved from " + currentPos + " to " + next);
     Intent intent = new Intent(currentPos, next, vehicle);
-    getRoadsForPoint(currentPos).forEach(road -> road.removeVehicle(vehicle));
-    getRoadsForPoint(next).forEach(road -> road.addVehicle(vehicle));
+    getRoadsForPoint(currentPos).forEach(road -> road.removeVehicle(currentPos));
+    getRoadsForPoint(next).forEach(road -> road.addVehicle(next, vehicle));
     vehicle.move();
 
     return intent;
@@ -101,7 +101,7 @@ public class Land {
 
   public void updateRoadsFor(Vehicle vehicle) {
     getRoadsForPoint(vehicle.getCurrentPos())
-        .forEach(road -> road.addVehicle(vehicle));
+        .forEach(road -> road.addVehicle(vehicle.getCurrentPos(), vehicle));
   }
 
 //  public List<Road> getRoadAround(Road road, Point point) {
