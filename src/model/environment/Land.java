@@ -146,9 +146,8 @@ public class Land {
   }
 
   public boolean isInLand(Point point) {
-    // @todo [irindul-2018-12-02] : Fab, is it normal that y and x condition are not the same ?
-    return point.y > -1
-        && point.x > 0
+    return point.y >= 0
+        && point.x >= 0
         && point.y < getHeight()
         && point.x < getWidth();
   }
