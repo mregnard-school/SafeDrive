@@ -81,13 +81,12 @@ public class DumbMotion implements MotionStrategy {
     if (roads.isEmpty()) {
       return;
     }
-    availablePoints.addAll(agent.getLand().roadExit(roads.get(0), agent.getCurrentPos()));
-//    roads.forEach(road -> {
-//      List<Point> points = agent.getLand().roadExit(road, agent.getCurrentPos());
-//      System.out.println("dans le foreach points");
-//      System.out.println(points);
-//      availablePoints.addAll(points);
-//    });
+    roads.forEach(road -> {
+      List<Point> points = agent.getLand().roadExit(road, agent.getCurrentPos());
+      System.out.println("dans le foreach points");
+      System.out.println(points);
+      availablePoints.addAll(points);
+    });
 //    System.out.println(availablePoints);
 //    System.out.println("fin extra points");
   }

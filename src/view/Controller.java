@@ -53,10 +53,10 @@ public class Controller implements PropertyChangeListener {
     iterationsLabel.setText("-");
     runButton.setDisable(true);
     stopButton.setDisable(true);
-    speedInput.setText("1000");
+    speedInput.setText("200");
     setUpListeners();
     iterationsInput.setText("25");
-    vehiclesInput.setText("25");
+    vehiclesInput.setText("3");
   }
 
   private void setUpListeners() {
