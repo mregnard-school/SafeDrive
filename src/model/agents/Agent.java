@@ -2,7 +2,7 @@ package model.agents;
 
 import java.util.List;
 import java.util.Queue;
-import model.communication.Command;
+import model.communication.message.Command;
 import model.environment.Direction;
 
 public interface Agent {

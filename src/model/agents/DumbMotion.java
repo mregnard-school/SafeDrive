@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.stream.Collectors;
-import model.communication.Command;
+import model.communication.message.Command;
+import model.communication.message.Message;
 import model.environment.Direction;
 import model.environment.Land;
 import model.environment.Road;
@@ -66,6 +67,9 @@ public class DumbMotion implements MotionStrategy {
 
   private List<Direction> analyzeMessage() {
     List<Direction> answers = new ArrayList<>();
+    List<Message> messages =  commands.stream().map(command -> {
+      return (Message) command;
+    }).collect(Collectors.toList());
     if (commands.isEmpty()) {
       return answers;
     } else {

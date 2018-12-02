@@ -11,7 +11,7 @@ import java.util.Queue;
 import java.util.stream.Collectors;
 import model.communication.BroadcastInvoker;
 import model.communication.CarReceiver;
-import model.communication.Command;
+import model.communication.message.Command;
 import model.communication.DialogInvoker;
 import model.communication.Invoker;
 import model.communication.Receiver;

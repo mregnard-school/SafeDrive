@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import model.communication.message.Command;
 
 public class CarReceiver implements Runnable, Receiver {
 

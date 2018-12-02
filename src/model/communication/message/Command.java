@@ -1,7 +1,8 @@
-package model.communication;
+package model.communication.message;
 
 import java.io.Serializable;
 import java.util.List;
+import model.communication.Receiver;
 
 public interface Command extends Serializable {
 
