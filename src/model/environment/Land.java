@@ -2,16 +2,11 @@ package model.environment;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import model.agents.Vehicle;
-import model.communication.Receiver;
-import model.communication.message.Priority;
-import model.communication.message.RequestInformation;
-import model.communication.message.RequestMove;
 import util.Intent;
 
 public class Land {
@@ -76,21 +71,7 @@ public class Land {
   }
 
   public Intent move(Vehicle vehicle, Point next) {
-    Optional<Vehicle> block = getVehiculeAt(next);
-    if (block.isPresent()) {
-      //@TODO maybe it's not the best solution but meh
-      List<Receiver> receivers = Collections.singletonList(block.get());
-      RequestInformation requestInformation = new RequestInformation(
-          vehicle,
-          receivers,
-          Priority.MEDIUM);
-      //We send request for more information
-      vehicle.invoke(requestInformation);
-      RequestMove requestMove = new RequestMove(
-          vehicle,
-          receivers,
-          Priority.MEDIUM);
-      vehicle.invoke(requestMove);
+    if (!isAvailable(next)) {
       return new Intent(vehicle.getCurrentPos(), vehicle.getCurrentPos(), vehicle);
     }
 
@@ -104,12 +85,12 @@ public class Land {
     return intent;
   }
 
-//  private boolean getVehiculeAt(Point point) {    //remove function cause the one below is better
-//    return getRoadsForPoint(point)
-//        .noneMatch(road -> road.getVehicleAt(point).isPresent());
-//  }
+  private boolean isAvailable(Point point) {    //remove function cause the one below is better
+    return getRoadsForPoint(point)
+        .noneMatch(road -> road.getVehicleAt(point).isPresent());
+  }
 
-  private Optional<Vehicle> getVehiculeAt(Point point) {
+  public Optional<Vehicle> getVehicleAt(Point point) {
     return getRoadsForPoint(point)
         .filter(road -> road.getVehicleAt(point).isPresent())
         .map(road -> road.getVehicleAt(point)
@@ -121,7 +102,6 @@ public class Land {
     getRoadsForPoint(vehicle.getCurrentPos())
         .forEach(road -> road.addVehicle(vehicle));
   }
-
 
 //  public List<Road> getRoadAround(Road road, Point point) {
 //    List<Road> roads = new ArrayList<>();

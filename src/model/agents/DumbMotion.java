@@ -8,7 +8,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.stream.Collectors;
+import model.communication.Receiver;
 import model.communication.message.Command;
+import model.communication.message.Priority;
 import model.communication.message.RequestMove;
 import model.environment.Land;
 import model.environment.Road;
@@ -25,8 +27,6 @@ public class DumbMotion implements MotionStrategy {
     this.agent = agent;
     commands = agent.getCommands();
 
-    //@todo send request
-
     List<Point> availablePoints = getAvailablePoints();
 
     //@TODO REMOVE DEBUG    THIS FUCKING CAR NEED TO TURN AROUND
@@ -41,7 +41,13 @@ public class DumbMotion implements MotionStrategy {
     }
     Optional<Point> closest = findClosestPoint(availablePoints);
     if (closest.isPresent()) {
-      agent.setNextPos(closest.get());
+      Optional<Vehicle> vehicle = agent.getLand().getVehicleAt(closest.get());
+      if (vehicle.isPresent()) {
+        sendRequest(vehicle.get());
+        agent.setNextPos(agent.getCurrentPos());
+      } else {
+        agent.setNextPos(closest.get());
+      }
       //Yeah we got the closest point, we can move
     } else {
       agent.setNextPos(agent.getCurrentPos());    //@TODO tmp
@@ -49,6 +55,28 @@ public class DumbMotion implements MotionStrategy {
       //Uh oh, no points available :'(
       //We stop the car (speed = 0)
     }
+  }
+
+  private void sendRequest(Vehicle block) {
+    //Optional<Vehicle> block = agent.getLand().getVehicleAt(point);
+    List<Receiver> receivers = Collections.singletonList(block);
+   /* RequestInformation requestInformation = new RequestInformation(
+        agent,
+        receivers,
+        Priority.MEDIUM
+    );*/
+
+    //We send request for more information
+    //agent.invoke(requestInformation);
+
+    // @todo [irindul-2018-12-02] : if request info sent, wait for response (with a timeout)
+
+    RequestMove requestMove = new RequestMove(
+        agent,
+        receivers,
+        Priority.MEDIUM
+    );
+    agent.invoke(requestMove);
   }
 
   private List<Point> removeCommonPoints(List<Point> availablePoints,
