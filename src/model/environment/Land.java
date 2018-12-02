@@ -113,10 +113,10 @@ public class Land {
       first = Direction.EAST.next(point);
       second = Direction.WEST.next(point);
     }
-    if (getRoadsForPoint(first).collect(Collectors.toList()).isEmpty()) {
+    if (!getRoadsForPoint(first).collect(Collectors.toList()).isEmpty() && isInLand(first)) {
       points.add(first);
     }
-    if (getRoadsForPoint(second).collect(Collectors.toList()).isEmpty()) {
+    if (!getRoadsForPoint(second).collect(Collectors.toList()).isEmpty() && isInLand(second)) {
       points.add(second);
     }
     return points;
