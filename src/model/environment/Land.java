@@ -91,10 +91,11 @@ public class Land {
   }
 
   public Optional<Vehicle> getVehicleAt(Point point) {
+    // @todo [irindul-2018-12-02] : Might be buggy (Says there is someone where he isn't
+    // @todo [irindul-2018-12-02] : Might come from roads that are not updated
     return getRoadsForPoint(point)
         .filter(road -> road.getVehicleAt(point).isPresent())
-        .map(road -> road.getVehicleAt(point)
-            .get())          //don't need to check if it's present cause we test it above
+        .map(road -> road.getVehicleAt(point).get())
         .findFirst();
   }
 
@@ -142,5 +143,13 @@ public class Land {
 
   public int getHeight() {
     return height;
+  }
+
+  public boolean isInLand(Point point) {
+    // @todo [irindul-2018-12-02] : Fab, is it normal that y and x condition are not the same ?
+    return point.y > -1
+        && point.x > 0
+        && point.y < getHeight()
+        && point.x < getWidth();
   }
 }
