@@ -1,6 +1,9 @@
 package model.agents;
 
+import static util.PointOperations.getManhatanDistance;
+
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -19,57 +22,88 @@ public class DumbMotion implements MotionStrategy {
 
   private Queue<Command> commands;
   private Vehicle agent;
+  private List<Point> availablePoints;
 
   @Override
   public void run(Vehicle agent, Land land) {
-
-    //Set environement + Agent variable
     this.agent = agent;
     commands = agent.getCommands();
 
-    List<Point> availablePoints = getAvailablePoints();
+    processAvailablePoints();
 
-    //@TODO REMOVE DEBUG    THIS FUCKING CAR NEED TO TURN AROUND
-    if (agent.getId() == 19) {
-      //System.out.println("Fucking car");
-      //System.out.println(availablePoints);
+    List<Point> requests = analyzeMessage();
+    removeRequestedPoints(requests);
+
+    Optional<Point> closest = findClosestPoint();
+
+    if (!closest.isPresent()) {
+      idle();
+      return;
     }
 
-    Optional<List<Point>> answers = analyzeMessage();
-    if (answers.isPresent()) {      //if there is an answer, we remove the points available
-      availablePoints = removeCommonPoints(availablePoints, answers.get());
+    Optional<Vehicle> vehicle = agent.getLand().getVehicleAt(closest.get());
+
+    if (!vehicle.isPresent()) {
+      agent.setNextPos(closest.get());
+      return;
     }
-    Optional<Point> closest = findClosestPoint(availablePoints);
-    if (closest.isPresent()) {
-      Optional<Vehicle> vehicle = agent.getLand().getVehicleAt(closest.get());
-      if (vehicle.isPresent()) {
-        sendRequest(vehicle.get());
-        agent.setNextPos(agent.getCurrentPos());
-      } else {
-        agent.setNextPos(closest.get());
+
+    sendRequest(vehicle.get());
+
+    //We're block so me wait
+    idle();
+  }
+
+  private void processAvailablePoints() {
+    availablePoints = new ArrayList<>();
+    processInRangeMovement();
+    addExtraPoints();
+  }
+
+  private void processInRangeMovement() {
+    agent.getLand()
+        .getRoadsForPoint(agent.getCurrentPos())
+        .map(Road::getAxis)
+        .map(direction -> direction.next(agent.getCurrentPos()))
+        .filter(point -> agent.getLand().isInLand(point))
+        .forEach(point -> availablePoints.add(point));
+  }
+
+  private void addExtraPoints() {
+    // @todo [irindul-2018-12-02] : Check if work
+    List<Road> roads = agent
+        .getLand()
+        .getRoadsForPoint(agent.getCurrentPos())
+        .collect(Collectors.toList());
+    //We take the first one because there should @TODO here to pass someonex
+    agent.getLand().roadExit(roads.get(0), agent.getCurrentPos());
+  }
+
+  private List<Point> analyzeMessage() {
+    List<Point> points = new ArrayList<>();
+
+    if (commands.isEmpty()) {
+      return points;
+    }
+
+    return (commands.stream().map(command -> {
+      RequestMove message = (RequestMove) command;
+      return message.getGoal();
+    }).collect(Collectors.toList()));
+  }
+
+  private void removeRequestedPoints(List<Point> answers) {
+    answers.forEach(point -> {
+      if (!availablePoints.isEmpty()) {
+        availablePoints.remove(point);
       }
-      //Yeah we got the closest point, we can move
-    } else {
-      agent.setNextPos(agent.getCurrentPos());    //@TODO tmp
-
-      //Uh oh, no points available :'(
-      //We stop the car (speed = 0)
-    }
+    });
+    availablePoints = availablePoints.stream().filter(Objects::nonNull)
+        .collect(Collectors.toList());
   }
 
   private void sendRequest(Vehicle block) {
-    //Optional<Vehicle> block = agent.getLand().getVehicleAt(point);
     List<Receiver> receivers = Collections.singletonList(block);
-   /* RequestInformation requestInformation = new RequestInformation(
-        agent,
-        receivers,
-        Priority.MEDIUM
-    );*/
-
-    //We send request for more information
-    //agent.invoke(requestInformation);
-
-    // @todo [irindul-2018-12-02] : if request info sent, wait for response (with a timeout)
 
     RequestMove requestMove = new RequestMove(
         agent,
@@ -79,47 +113,7 @@ public class DumbMotion implements MotionStrategy {
     agent.invoke(requestMove);
   }
 
-  private List<Point> removeCommonPoints(List<Point> availablePoints,
-      List<Point> answers) {
-
-    List<Point> tmp = availablePoints;
-//    List<Point> newPoints = availablePoints
-//        .stream()
-//        .filter(point -> answers
-//            .stream()
-//            .noneMatch(answer -> answer.equals(point)))
-//        .collect(Collectors.toList());
-
-    answers.forEach(point -> {
-      if (!tmp.isEmpty()) {
-        tmp.remove(point);
-      }
-    });
-    return tmp.stream().filter(Objects::nonNull).collect(Collectors.toList());
-  }
-
-  private List<Point> getAvailablePoints() {
-    List<Point> points = agent
-        .getLand()
-        .getRoadsForPoint(agent.getCurrentPos())
-        .map(Road::getAxis)
-        .map(direction -> direction.next(agent.getCurrentPos()))
-        .filter(point -> point.y > -1 && point.x > 0 && point.y < agent.getLand().getHeight()
-            && point.x < agent.getLand().getWidth())
-        .collect(Collectors.toList());
-    //Now we get oghter points around cause sometime u have to turn around
-    List<Road> roads = agent
-        .getLand()
-        .getRoadsForPoint(agent.getCurrentPos())
-        .collect(Collectors.toList());
-
-    //We take the first one because there should @TODO here to pass someonex
-    agent.getLand().roadExit(roads.get(0), agent.getCurrentPos());
-
-    return points;
-  }
-
-  private Optional<Point> findClosestPoint(List<Point> availablePoints) {
+  private Optional<Point> findClosestPoint() {
     if (availablePoints.isEmpty()) {
       return Optional.empty();
     }
@@ -132,23 +126,7 @@ public class DumbMotion implements MotionStrategy {
     return Optional.of(closest);
   }
 
-  private Optional<List<Point>> analyzeMessage() {
-//    List<Message> messages =  commands.stream().map(command -> (Message) command).collect(Collectors.toList());
-//    System.out.println(commands);
-    if (commands.isEmpty()) {
-      return Optional.empty();
-    }
-    return Optional.of(commands.stream().map(command -> {
-      RequestMove message = (RequestMove) command;
-      return message.getGoal();
-    }).collect(Collectors.toList()));
-//    messages
-//    List<Direction> answers = new ArrayList<>();
+  private void idle() {
+    agent.setNextPos(agent.getCurrentPos());
   }
-
-
-  private int getManhatanDistance(Point from, Point to) {
-    return Math.abs(to.x - from.x) + Math.abs(to.y - to.x);
-  }
-
 }
