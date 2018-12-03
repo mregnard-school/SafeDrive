@@ -26,6 +26,6 @@ public class Information  extends Message{
 
   @Override
   public String toString() {
-    return "{Information: "+ speed + ", destination: " + destination + ", nextPos: " + nextPos + "}";
+    return "Information: "+ speed + ", destination: " + destination + ", nextPos: " + nextPos;
   }
 }

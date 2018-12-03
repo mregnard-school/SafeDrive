@@ -86,6 +86,7 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   @Override
   public void invoke(Command command) {
+    log(command.toString());
     if (command.getReceivers().size() > 1) {
       broadcaster.invoke(command);
     } else if (command.getReceivers().size() == 1) {
@@ -104,7 +105,7 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   @Override
   public void receive(Command command) { //Get type of message (if information -> send it right away)
-    //Logger.log("Command received:" + command.toString());
+    Logger.log("Command received:" + command.toString());
     command.execute();
     if (command instanceof RequestInformation) {    //we don't need to store
       return;

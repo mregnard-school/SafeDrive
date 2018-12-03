@@ -60,26 +60,7 @@ public class DumbMotion implements MotionStrategy {
   private void processAvailablePoints() {
     availablePoints = new ArrayList<>();
     processInRangeMovement();
-    if (agent.getId() == 2) {
-      agent.log("====Start===");
-      agent.log("pos = " + pointToString(agent.getCurrentPos()));
-      availablePoints.forEach(point -> {
-        Logger.log(pointToString(point));
-      });
-      Logger.log("adding extra");
-    }
-
-
     addExtraPoints();
-    if (agent.getId() == 2) {
-      availablePoints.forEach(point -> {
-        Logger.log(pointToString(point));
-      });
-      agent.log("====End===");
-    }
-
-
-
   }
 
   private void processInRangeMovement() {
@@ -101,8 +82,6 @@ public class DumbMotion implements MotionStrategy {
     }
     roads.forEach(road -> {
       List<Point> points = agent.getLand().roadExit(road, agent.getCurrentPos());
-      System.out.println("dans le foreach points");
-      System.out.println(points);
       availablePoints.addAll(points);
     });
   }

@@ -29,6 +29,6 @@ public abstract class Message implements Command {
   @Override
   public String toString() {
     Vehicle vehicle = (Vehicle) author;
-    return "from:" + vehicle + ", priority: " + priority + "\n" + receivers + "}";
+    return "from: " + vehicle.getId() + ", priority: " + priority + "\n" + receivers;
   }
 }

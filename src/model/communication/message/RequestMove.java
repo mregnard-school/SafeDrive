@@ -21,6 +21,6 @@ public class RequestMove extends Message {
 
   @Override
   public String toString() {
-    return "{RequestMove: goal= " + goal + " " + super.toString();
+    return "Move is requested : goal= " + goal + " " + super.toString();
   }
 }

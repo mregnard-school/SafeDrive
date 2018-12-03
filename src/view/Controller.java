@@ -58,8 +58,8 @@ public class Controller implements PropertyChangeListener {
     stopButton.setDisable(true);
     speedInput.setText("200");
     setUpListeners();
-    iterationsInput.setText("5");
-    vehiclesInput.setText("3");
+    iterationsInput.setText("25");
+    vehiclesInput.setText("25");
   }
 
   private void setUpListeners() {
@@ -175,9 +175,6 @@ public class Controller implements PropertyChangeListener {
   private void simulationUpdate(PropertyChangeEvent evt) {
     grid.clearGrid();
     grid.draw(loop.getSimulation().getLand());
-    grid.draw(new Point(16, 3), Color.ALICEBLUE);
-    grid.draw(new Point(10, 5), Color.AZURE);
-    grid.draw(new Point(1, 7), Color.ORANGERED);
 
     IntentList intents = (IntentList) evt.getNewValue();
     intents.stream().forEach(grid::draw);

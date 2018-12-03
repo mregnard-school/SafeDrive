@@ -18,7 +18,6 @@ public class CarReceiver implements Runnable, Receiver {
   public CarReceiver(Receiver receiver) {
     try {
       this.port = this.getAvailablePort();
-      System.out.println("Running on port " + port);
       this.socket = new DatagramSocket(port);
       this.receiver = receiver;
       new Thread(this).start();

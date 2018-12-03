@@ -29,6 +29,6 @@ public class RequestInformation extends Message {
 
   @Override
   public String toString() {
-    return "{RequestInformation: "+ super.toString() + "}";
+    return "Information requested: "+ super.toString();
   }
 }
