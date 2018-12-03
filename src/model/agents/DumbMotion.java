@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import model.communication.message.Information;
+import model.communication.message.NoOption;
 import model.environment.Road;
 import util.Intent;
 import util.IntentList;
@@ -146,14 +147,17 @@ public class DumbMotion implements MotionStrategy {
         .allMatch(point -> point.equals(intent.getTo()));
   }
 
+  private void sendNoOption(Vehicle vehicle) {
+    agent.invoke(new NoOption(vehicle));
+  }
+
   private Intent resolveWithoutOption() throws InterruptedException {
     awaitResponses();
-    if (/*all others have other choices */ true) {
+    if (!agent.hasNoOption()) {
       return myIntent;
     }
 
     // @todo [irindul-2018-12-03] : Flip a coin
-
     return idle();
   }
 
@@ -165,7 +169,6 @@ public class DumbMotion implements MotionStrategy {
     Point newClosest = getSecondClosest();
 
     awaitResponses();
-
     List<Double> otherCosts = agent.getCosts();
 
     double maxOfOthers = otherCosts.stream().max(Double::compareTo).get();
@@ -176,7 +179,7 @@ public class DumbMotion implements MotionStrategy {
     }
 
     if (myCost < maxOfOthers) {
-      // I hate you
+      // You underestimate my cost
       agent.setNextPos(newClosest);
       return createIntent(newClosest);
     }
@@ -207,10 +210,6 @@ public class DumbMotion implements MotionStrategy {
   }
 
   private void sendCost(double myCost, Intent intent) {
-    myIntent.getAgent().invoke(new Information(agent, myCost, myIntent, intent.getAgent()));
-  }
-
-  private void sendNoOption(Vehicle vehicle) {
-    //@TODO send message
+    agent.invoke(new Information(agent, myCost, intent.getAgent()));
   }
 }

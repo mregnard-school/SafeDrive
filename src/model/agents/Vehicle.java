@@ -12,7 +12,6 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
-import model.communication.BroadcastInvoker;
 import model.communication.CarReceiver;
 import model.communication.DialogInvoker;
 import model.communication.Invoker;
@@ -30,7 +29,6 @@ public class Vehicle implements Invoker, Receiver {
   private static int nbVehicles = 1;
 
   private transient MotionStrategy motionStrategy;
-  transient private BroadcastInvoker broadcaster;
   private transient DialogInvoker dialoger;
   private CarReceiver receiver;
   private int id;
@@ -43,11 +41,11 @@ public class Vehicle implements Invoker, Receiver {
   private transient Land land; //Need to put that cause Optional which is in Land > Road is not serializable
   private transient Semaphore semaphore;
   private List<Double> costs;
+  private boolean noOption;
 
   private Vehicle() {
     id = nbVehicles++;
     dialoger = new DialogInvoker();
-    broadcaster = new BroadcastInvoker(dialoger);
     receiver = new CarReceiver(this);
     commands = new LinkedList<>();
 
@@ -87,20 +85,18 @@ public class Vehicle implements Invoker, Receiver {
     this.currentPos = nextPos;
     nextPos = null;
     costs = new ArrayList<>();
+    noOption = false;
   }
 
   @Override
   public void invoke(Command command) {
     log(command.toString());
-    if (command.getReceivers().size() > 1) {
-      broadcaster.invoke(command);
-    } else if (command.getReceivers().size() == 1) {
-      if (dialoger == null) {
-        dialoger = new DialogInvoker();
-      }
-      dialoger.setReceiver(command.getReceivers().get(0));
-      dialoger.invoke(command);
+
+    if (dialoger == null) {
+      dialoger = new DialogInvoker();
     }
+
+    dialoger.invoke(command);
   }
 
 
@@ -109,7 +105,8 @@ public class Vehicle implements Invoker, Receiver {
   }
 
   @Override
-  public void receive(Command command) { //Get type of message (if information -> send it right away)
+  public void receive(
+      Command command) { //Get type of message (if information -> send it right away)
     Logger.log("Command received:" + command.toString());
     command.execute();
     commands.add(command);
@@ -146,7 +143,7 @@ public class Vehicle implements Invoker, Receiver {
 
   @Override
   public String toString() {
-    return "Vehicule= {currentPos: "+ currentPos +", destination: " + "}" +destination;
+    return "Vehicule= {currentPos: " + currentPos + ", destination: " + "}" + destination;
   }
 
   public void setNextPos(Point pos) {
@@ -156,6 +153,7 @@ public class Vehicle implements Invoker, Receiver {
   public int getSpeed() {
     return speed;
   }
+
   public Point getCurrentPos() {
     return currentPos;
   }
@@ -211,5 +209,13 @@ public class Vehicle implements Invoker, Receiver {
 
   public void addCost(double cost) {
     this.costs.add(cost);
+  }
+
+  public void setNoOption(boolean noOption) {
+    this.noOption = noOption;
+  }
+
+  public boolean hasNoOption() {
+    return noOption;
   }
 }

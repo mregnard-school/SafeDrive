@@ -13,7 +13,6 @@ import model.communication.message.Command;
 public class DialogInvoker implements Invoker {
 
   private DatagramSocket socket;
-  private Receiver receiver;
 
   public DialogInvoker() {
     try {
@@ -23,25 +22,15 @@ public class DialogInvoker implements Invoker {
     }
   }
 
-  public void setReceiver(Receiver receiver) {
-    this.receiver = receiver;
-  }
-
   @Override
   public void invoke(Command command) {
     try {
-      int plate = receiver.getId();
+      int plate = command.getReceiver().getId();
       InetAddress address = Router.getAddressOf(plate);
       int port = Router.getPortOf(plate);
 
       ByteArrayOutputStream bStream = new ByteArrayOutputStream();
       ObjectOutput oo = new ObjectOutputStream(bStream);
-
-      if(command == null) {
-        System.out.println("Swag");
-
-      }
-
       oo.writeObject(command);
       oo.close();
 
