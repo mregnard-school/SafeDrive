@@ -22,6 +22,8 @@ public class Information implements Command {
     Vehicle vehicle = (Vehicle) author;
     Vehicle agent = Handler.getAgent(vehicle.getId());
     agent.getSem().release(1);
+    System.out.println("REceived cost " + averageCost);
+    
     agent.addCost(averageCost);
   }
 

@@ -132,11 +132,13 @@ public class DumbMotion implements MotionStrategy {
   }
 
   public Intent resolveConflicts(List<Intent> conflictedIntents) throws InterruptedException {
+    Handler.registerForTurnament(myIntent.getTo());
     if (hasNoOtherOptions(myIntent)) {
       conflictedIntents.forEach(intent -> sendNoOption(intent.getAgent()));
       return resolveWithoutOption();
     }
 
+    // @todo [irindul-2018-12-03] :  check (always exact same values...)
     double myCost = calculateMyAverageLoss();
     conflictedIntents.forEach(intent -> sendCost(myCost, intent));
     return resolveWithOptions(myCost);
@@ -193,6 +195,8 @@ public class DumbMotion implements MotionStrategy {
     List<Double> otherCosts = agent.getCosts();
 
     double maxOfOthers = otherCosts.stream().max(Double::compareTo).get();
+
+    // @todo [irindul-2018-12-03] : check values and condition here : seems to be flipping a coin when it should just go/let go
     if (myCost > maxOfOthers) {
       agent.log("Fuck it I go");
       //It's over Anakin, I have the high cost
