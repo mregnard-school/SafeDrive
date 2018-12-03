@@ -19,10 +19,9 @@ public class Information implements Command {
 
   @Override
   public void execute() {
-    Vehicle vehicle = (Vehicle) receiver;
-    Vehicle agent = Handler.getAgent(vehicle.getId());
-    agent.getSem().release(1);
-    agent.addCost(averageCost);
+    Vehicle receiver = Handler.getAgent(this.receiver.getId());
+    receiver.getSem().release(1);
+    receiver.addCost(averageCost);
   }
 
   @Override

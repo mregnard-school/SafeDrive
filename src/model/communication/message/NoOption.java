@@ -14,8 +14,7 @@ public class NoOption implements Command {
 
   @Override
   public void execute() {
-    Vehicle vehicle = (Vehicle) receiver;
-    Vehicle agent = Handler.getAgent(vehicle.getId());
+    Vehicle agent = Handler.getAgent(receiver.getId());
     agent.getSem().release(1);
     agent.setNoOption(true);
   }

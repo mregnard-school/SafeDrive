@@ -39,9 +39,6 @@ public class App extends Application {
       Grid grid = new Grid(height, width, _width, _height);
       grid.setLayout(33, 52);
       controller.setGrid(grid);
-
-//      LayoutX="108.0" layoutY="68.0" prefHeight="816.0" prefWidth="862.0"
-      ///
       rootLayout.getChildren().add(grid.getPane());
       Scene scene = new Scene(rootLayout, WIDTH, HEIGHT);
       stage.setScene(scene);

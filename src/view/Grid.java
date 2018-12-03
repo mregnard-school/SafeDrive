@@ -19,7 +19,6 @@ public class Grid {
   // We define here the colors
   private final Color EMPTY_COLOR = Color.WHITE;
   private final Color ROAD_COLOR = Color.GRAY;
-  private final Color STROKE_COLOR = Color.BLACK;
   private final Color CAR_COLOR = Color.RED;
   private final Color DIRECTION_COLOR = Color.WHITE;
 
@@ -50,7 +49,7 @@ public class Grid {
         text.setFill(DIRECTION_COLOR);
         rectangleStringMap.put(rectangles[i][j], text);
         stack.getChildren().addAll(rectangles[i][j], text);
-        getPane().add(stack, j, i );
+        pane.add(stack, j, i );
 
       }
     }
@@ -68,20 +67,12 @@ public class Grid {
     }
   }
 
-
-  public GridPane getPane() {
-    return pane;
-  }
-
   public void draw(int x, int y, Color color) {
     rectangles[y][x].setFill(color);
   }
 
   public void draw(Land land) {
     draw(land.getRoads());
-//    land.getJoins().forEach(point -> {
-//      draw(point, Color.BLUE);
-//    });
   }
 
   public void draw(List<Road> roads) {
@@ -156,14 +147,6 @@ public class Grid {
     pane.setLayoutY(y);
   }
 
-  public Color getCarColor() {
-    return CAR_COLOR;
-  }
-
-  public Color getRoadColor() {
-    return ROAD_COLOR;
-  }
-
   public int getHeight() {
     return height;
   }
@@ -171,4 +154,9 @@ public class Grid {
   public int getWidth() {
     return width;
   }
+
+  public GridPane getPane() {
+    return pane;
+  }
+
 }

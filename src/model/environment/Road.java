@@ -1,9 +1,7 @@
 package model.environment;
 
 import java.awt.Point;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import model.agents.Vehicle;
@@ -11,19 +9,13 @@ import model.agents.Vehicle;
 public class Road {
 
   private Direction axis;
-  private Point position;
   private Map<Point, Optional<Vehicle>> vehicles;
-  private List<Point> exits;
-  private List<Point> joins;
   private int pivot; // x or y, depend if it's horizontal or not
 
   public Road(Direction axis, int pivot) {
     vehicles = new HashMap<>();
-    exits = new ArrayList<>();
-    joins = new ArrayList<>();
     this.axis = axis;
     this.pivot = pivot;
-    this.position = isHorizontal() ? new Point(0, pivot) : new Point(pivot, 0) ;
   }
 
   public boolean contains(Point point) {
@@ -34,11 +26,6 @@ public class Road {
     }
   }
 
-
-  public void addExit(Point point) {
-    exits.add(point);
-  }
-
   public void addVehicle(Point point, Vehicle vehicle) {
     vehicles.put(point, Optional.of(vehicle));
   }
@@ -47,35 +34,16 @@ public class Road {
     vehicles.put(point, Optional.empty());
   }
 
-  public Optional<Vehicle> getVehicleAt(Point point) {
+  public Optional<Vehicle> vehicleAt(Point point) {
     if (!vehicles.containsKey(point)) {
       return Optional.empty();
     }
     return vehicles.get(point);
   }
 
-  public void addJoin(Point point) {
-    joins.add(point);
-  }
-
-  public void setJoins(List<Point> joins) {
-    this.joins = joins;
-  }
-
-  public Direction getAxis() {
-    return axis;
-  }
-
-  public Point getPosition() {
-    return position;
-  }
-
-  public List<Point> getExits() {
-    return exits;
-  }
-
-  public List<Point> getJoins() {
-    return joins;
+  @Override
+  public String toString() {
+    return "road: " + pivot + " " + getAxis();
   }
 
   public boolean isHorizontal() {
@@ -86,8 +54,8 @@ public class Road {
     return pivot;
   }
 
-  @Override
-  public String toString() {
-    return "road: " + pivot + " " + getAxis();
+  public Direction getAxis() {
+    return axis;
   }
+
 }

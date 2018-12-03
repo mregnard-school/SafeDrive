@@ -15,10 +15,6 @@ public class Intent {
     this.agent = agent;
   }
 
-  public Point getFrom() {
-    return entry.getKey();
-  }
-
   public Point getTo() {
     return entry.getValue();
   }

@@ -1,7 +1,5 @@
 package model.agents;
 
-import static util.PointOperations.pointToString;
-
 import java.awt.Point;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -11,16 +9,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
-import java.util.stream.Collectors;
 import model.communication.CarReceiver;
 import model.communication.DialogInvoker;
 import model.communication.Invoker;
 import model.communication.Receiver;
 import model.communication.Router;
 import model.communication.message.Command;
-import model.environment.Direction;
 import model.environment.Land;
-import model.environment.Road;
 import util.Intent;
 import util.Logger;
 
@@ -32,11 +27,9 @@ public class Vehicle implements Invoker, Receiver {
   private transient DialogInvoker dialoger;
   private CarReceiver receiver;
   private int id;
-  private int speed;
   private Point currentPos;
   private Point destination;
   private Point nextPos;
-  private Direction direction;
   private Queue<Command> commands;
   private transient Land land; //Need to put that cause Optional which is in Land > Road is not serializable
   private transient Semaphore semaphore;
@@ -60,25 +53,13 @@ public class Vehicle implements Invoker, Receiver {
 
   public Vehicle(Point currentPos,
       Point destination,
-      Direction direction,
       MotionStrategy motionStrategy,
       Land land) {
     this();
     this.currentPos = currentPos;
     this.destination = destination;
-    this.direction = direction;
     this.motionStrategy = motionStrategy;
-    this.speed = 1;
     this.land = land;
-    this.log(pointToString(destination));
-  }
-
-  public void accelerate(int acceleration) {
-    this.speed += acceleration;
-  }
-
-  public void brake(int deceleration) {
-    this.speed -= deceleration;
   }
 
   public void move() {
@@ -90,7 +71,6 @@ public class Vehicle implements Invoker, Receiver {
 
   @Override
   public void invoke(Command command) {
-    log("Commande envoyé: " + command.toString());
     if (dialoger == null) {
       dialoger = new DialogInvoker();
     }
@@ -101,7 +81,6 @@ public class Vehicle implements Invoker, Receiver {
   @Override
   public void receive(
       Command command) { //Get type of message (if information -> send it right away)
-    log("Command received:" + command.toString());
     command.execute();
     commands.add(command);
   }
@@ -120,19 +99,13 @@ public class Vehicle implements Invoker, Receiver {
     if (!(obj instanceof Vehicle)) {
       return false;
     }
-
     Vehicle other = (Vehicle) obj;
-
     return this.id == other.id;
   }
 
   @Override
   public int hashCode() {
     return Objects.hash(id);
-  }
-
-  public Land getLand() {
-    return land;
   }
 
   @Override
@@ -144,18 +117,6 @@ public class Vehicle implements Invoker, Receiver {
     nextPos = pos;
   }
 
-  public int getSpeed() {
-    return speed;
-  }
-
-  public Point getCurrentPos() {
-    return currentPos;
-  }
-
-  public Point getNextPos() {
-    return nextPos;
-  }
-
   public void interrupt() {
     receiver.interrupt();
   }
@@ -165,13 +126,9 @@ public class Vehicle implements Invoker, Receiver {
     Logger.log(prefix + logEntry);
   }
 
-  public Point getDestination() {
-    return this.destination;
-  }
-
   public boolean isArrived() {
     if (this.currentPos.equals(destination)) {
-      log("is arrived !");
+      log(" is arrived !");
       return true;
     }
     return false;
@@ -181,24 +138,8 @@ public class Vehicle implements Invoker, Receiver {
     nbVehicles = 1;
   }
 
-  public Intent getIntent() {
-    return motionStrategy.getIntent(this);
-  }
-
-  public MotionStrategy getMotionStrategy() {
-    return motionStrategy;
-  }
-
   public void setSem(Semaphore sem) {
     this.semaphore = sem;
-  }
-
-  public Semaphore getSem() {
-    return this.semaphore;
-  }
-
-  public List<Double> getCosts() {
-    return this.costs;
   }
 
   public void addCost(double cost) {
@@ -211,5 +152,37 @@ public class Vehicle implements Invoker, Receiver {
 
   public boolean hasNoOption() {
     return noOption;
+  }
+
+  public Land getLand() {
+    return land;
+  }
+
+  public Point getCurrentPos() {
+    return currentPos;
+  }
+
+  public Point getNextPos() {
+    return nextPos;
+  }
+
+  public Point getDestination() {
+    return this.destination;
+  }
+
+  public Intent getIntent() {
+    return motionStrategy.getIntent(this);
+  }
+
+  public MotionStrategy getMotionStrategy() {
+    return motionStrategy;
+  }
+
+  public Semaphore getSem() {
+    return this.semaphore;
+  }
+
+  public List<Double> getCosts() {
+    return this.costs;
   }
 }

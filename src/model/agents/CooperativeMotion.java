@@ -16,7 +16,7 @@ import model.environment.Road;
 import util.Intent;
 import util.IntentList;
 
-public class DumbMotion implements MotionStrategy {
+public class CooperativeMotion implements MotionStrategy {
 
   private Vehicle agent;
   private List<Point> availablePoints;
@@ -35,19 +35,17 @@ public class DumbMotion implements MotionStrategy {
 
   private void processAvailablePoints() {
     availablePoints = new ArrayList<>();
-    processInRangeMovement();
-    if (availablePoints.isEmpty()) {
-      addExtraPoints();
-    }
-  }
-
-  private void processInRangeMovement() {
+    //Add in range movement
     agent.getLand()
         .getRoadsForPoint(agent.getCurrentPos())
         .map(Road::getAxis)
         .map(direction -> direction.next(agent.getCurrentPos()))
         .filter(point -> agent.getLand().isInLand(point))
         .forEach(point -> availablePoints.add(point));
+
+    if (availablePoints.isEmpty()) {
+      addExtraPoints();
+    }
   }
 
   private void addExtraPoints() {
@@ -68,12 +66,10 @@ public class DumbMotion implements MotionStrategy {
     if (availablePoints.isEmpty()) {
       return Optional.empty();
     }
-
     Point closest = Collections.min(
         availablePoints,
         Comparator.comparing(point -> getEuclidianDistance(point, agent.getDestination()))
     );
-
     return Optional.of(closest);
   }
 
@@ -85,10 +81,6 @@ public class DumbMotion implements MotionStrategy {
 
   private Intent createIntent(Point to) {
     return new Intent(agent.getCurrentPos(), to, agent);
-  }
-
-  public void setIntents(IntentList intents) {
-    this.intents = intents.stream().collect(Collectors.toList());
   }
 
   @Override
@@ -105,15 +97,11 @@ public class DumbMotion implements MotionStrategy {
 
     if (conflictedIntents.isEmpty()) {
       agent.setNextPos(myIntent.getTo());
-      agent.log("Moved without conflict");
       return myIntent;
     }
-
-    agent.log("I have  " + conflictedIntents.size() + " conflict !!");
     try {
       return resolveConflicts(conflictedIntents);
     } catch (InterruptedException e) {
-      agent.log("Interrupted!!");
       return idle();
     }
   }
@@ -139,7 +127,6 @@ public class DumbMotion implements MotionStrategy {
       return resolveWithoutOption();
     }
 
-    // @todo [irindul-2018-12-03] :  check (always exact same values...)
     double myCost = calculateMyAverageLoss();
     conflictedIntents.forEach(intent -> sendCost(myCost, intent));
     return resolveWithOptions(myCost);
@@ -163,30 +150,21 @@ public class DumbMotion implements MotionStrategy {
     }
 
     if (flipACoin()) {
-      agent.log("Won the coin flip");
       agent.setNextPos(myIntent.getTo());
       return myIntent;
     }
-
-    agent.log("Lost the coin flip");
     agent.setNextPos(myIntent.getTo());
     return idle();
   }
 
   private boolean flipACoin() {
-    // @todo [irindul-2018-12-03] : test but whould be working
     return Handler.flipACoinFor(myIntent.getTo());
   }
 
   private void awaitResponses() throws InterruptedException {
-    agent.log("Trying to acquire " + conflictCount);
     if (!agent.getSem().tryAcquire(conflictCount, 1000, TimeUnit.MILLISECONDS)) {
-      // @todo [irindul-2018-12-03] : Sometimes (with 3 agent itération 13) the lock is never acquired
-      // @todo [irindul-2018-12-03] : After investigation, the message is never received... I don't know y but afterward all message are never received
-      // @todo [irindul-2018-12-03] : Maybe check with UDP or maybe a bug somewhere else but it's 4:29 am and I don't give a shit right now
-      throw new InterruptedException("Timeout exceeeded");
+      throw new InterruptedException("Timeout exceed");
     }
-    agent.log("Acquired ");
   }
 
   private Intent resolveWithOptions(double myCost) throws InterruptedException {
@@ -195,28 +173,22 @@ public class DumbMotion implements MotionStrategy {
     awaitResponses();
     List<Double> otherCosts = agent.getCosts();
     double maxOfOthers = otherCosts.stream().max(Double::compareTo).orElseThrow(IllegalStateException::new);
-    // @todo [irindul-2018-12-03] : check values and condition here : seems to be flipping a coin when it should just go/let go
     if (myCost > maxOfOthers) {
-      agent.log("Fuck it I go");
       //It's over Anakin, I have the high cost
       agent.setNextPos(myIntent.getTo());
       return myIntent;
     }
 
     if (myCost < maxOfOthers) {
-      agent.log("Alright I let you go");
       // You underestimate my cost
       agent.setNextPos(newClosest);
       return createIntent(newClosest);
     }
 
    if(flipACoin()) {
-     agent.log("Won the coin flip");
      agent.setNextPos(myIntent.getTo());
      return myIntent;
    }
-
-    agent.log("Lost the coin flip");
     return idle();
   }
 
@@ -241,7 +213,10 @@ public class DumbMotion implements MotionStrategy {
   }
 
   private void sendCost(double myCost, Intent intent) {
-    agent.log("Sending cost " + myCost + " to" + intent.getAgent().getId());
     agent.invoke(new Information(agent, myCost, intent.getAgent()));
+  }
+
+  public void setIntents(IntentList intents) {
+    this.intents = intents.stream().collect(Collectors.toList());
   }
 }
