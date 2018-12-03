@@ -6,4 +6,5 @@ import model.communication.message.Command;
 public interface Invoker extends Serializable {
 
   void invoke(Command command);
+
 }

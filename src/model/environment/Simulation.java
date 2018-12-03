@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Stream;
-import model.agents.DumbMotion;
+import model.agents.CooperativeMotion;
 import model.agents.Handler;
 import model.agents.MotionStrategy;
 import model.agents.Vehicle;
@@ -60,14 +60,9 @@ public class Simulation {
     do {
       destination = getValidPoint();
     } while (destination.equals(currentPosition));
+    MotionStrategy movement = new CooperativeMotion();
 
-    Road road = land.getRoadsForPoint(currentPosition).findFirst()
-        .orElseThrow(IllegalStateException::new);
-
-    Direction direction = road.getAxis();
-    MotionStrategy movement = new DumbMotion();
-
-    Vehicle vehicle = new Vehicle(currentPosition, destination, direction, movement, land);
+    Vehicle vehicle = new Vehicle(currentPosition, destination, movement, land);
     agentInitialPositions.put(currentPosition, vehicle);
     this.vehicles.add(vehicle);
     land.updateRoadsFor(vehicle);
@@ -129,7 +124,7 @@ public class Simulation {
     List<Callable<Intent>> callables = new ArrayList<>();
 
     vehicles.forEach(vehicle -> {
-      DumbMotion motion = (DumbMotion) vehicle.getMotionStrategy();
+      CooperativeMotion motion = (CooperativeMotion) vehicle.getMotionStrategy();
       motion.setIntents(intents);
       callables.add(motion);
     });
@@ -153,9 +148,8 @@ public class Simulation {
     } catch (InterruptedException | ExecutionException e) {
       e.printStackTrace();
     }
-
     Handler.resetCoins();
-    Logger.log("Finished step " + currentStep);
+    Logger.log("Finished step: " + currentStep);
     vehicles = remaining;
   }
 
@@ -181,7 +175,7 @@ public class Simulation {
   public IntentList getInitialIntents() {
     IntentList intentList = new IntentList();
     this.vehicles.forEach(
-        vehicle -> intentList.addIntent(vehicle, vehicle.getCurrentPos(), vehicle.getCurrentPos())
+        vehicle -> intentList.addIntent(new Intent(vehicle.getCurrentPos(), vehicle.getCurrentPos(), vehicle))
     );
     return intentList;
   }

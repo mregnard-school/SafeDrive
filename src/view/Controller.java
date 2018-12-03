@@ -56,8 +56,8 @@ public class Controller implements PropertyChangeListener {
     stopButton.setDisable(true);
     speedInput.setText("200");
     setUpListeners();
-    iterationsInput.setText("25");
-    vehiclesInput.setText("3");
+    iterationsInput.setText("100");
+    vehiclesInput.setText("50");
   }
 
   private void setUpListeners() {
@@ -143,7 +143,6 @@ public class Controller implements PropertyChangeListener {
   @FXML
   private void stopSimulation(ActionEvent event) {
     deleteSimulation();
-    Logger.log("Simulation was stopped");
   }
 
   private void deleteSimulation() {

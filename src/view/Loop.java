@@ -79,7 +79,6 @@ public class Loop implements Runnable {
   }
 
   private void draw() {
-    // @todo [irindul-2018-12-02] : Handle multiple intents for same agent
     IntentList intents = buffer.poll();
 
     if (intents != null) {
