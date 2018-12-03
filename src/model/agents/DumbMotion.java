@@ -26,6 +26,7 @@ public class DumbMotion implements MotionStrategy {
 
   @Override
   public Intent getIntent(Vehicle agent) {
+    this.availablePoints = new ArrayList<>();
     this.agent = agent;
     processAvailablePoints();
     Optional<Point> closest = findClosestPoint();
@@ -35,7 +36,9 @@ public class DumbMotion implements MotionStrategy {
   private void processAvailablePoints() {
     availablePoints = new ArrayList<>();
     processInRangeMovement();
-    addExtraPoints();
+    if (availablePoints.isEmpty()) {
+      addExtraPoints();
+    }
   }
 
   private void processInRangeMovement() {
@@ -191,9 +194,7 @@ public class DumbMotion implements MotionStrategy {
 
     awaitResponses();
     List<Double> otherCosts = agent.getCosts();
-
-    double maxOfOthers = otherCosts.stream().max(Double::compareTo).get();
-
+    double maxOfOthers = otherCosts.stream().max(Double::compareTo).orElseThrow(IllegalStateException::new);
     // @todo [irindul-2018-12-03] : check values and condition here : seems to be flipping a coin when it should just go/let go
     if (myCost > maxOfOthers) {
       agent.log("Fuck it I go");

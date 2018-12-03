@@ -24,4 +24,9 @@ public class NoOption implements Command {
   public Receiver getReceiver() {
     return receiver;
   }
+
+  @Override
+  public String toString() {
+    return "{NoOption: for "+ receiver.getId() +"}";
+  }
 }

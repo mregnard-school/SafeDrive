@@ -90,6 +90,7 @@ public class Vehicle implements Invoker, Receiver {
 
   @Override
   public void invoke(Command command) {
+    log("Commande envoyé: " + command.toString());
     if (dialoger == null) {
       dialoger = new DialogInvoker();
     }
@@ -97,15 +98,10 @@ public class Vehicle implements Invoker, Receiver {
     dialoger.invoke(command);
   }
 
-
-  public List<Direction> getActions() {
-    return land.getRoadsForPoint(currentPos).map(Road::getAxis).collect(Collectors.toList());
-  }
-
   @Override
   public void receive(
       Command command) { //Get type of message (if information -> send it right away)
-    Logger.log("Command received:" + command.toString());
+    log("Command received:" + command.toString());
     command.execute();
     commands.add(command);
   }
