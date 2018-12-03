@@ -19,16 +19,20 @@ public class Information implements Command {
 
   @Override
   public void execute() {
-    Vehicle vehicle = (Vehicle) author;
+    Vehicle vehicle = (Vehicle) receiver;
     Vehicle agent = Handler.getAgent(vehicle.getId());
     agent.getSem().release(1);
-    System.out.println("REceived cost " + averageCost);
-    
     agent.addCost(averageCost);
   }
 
   @Override
   public Receiver getReceiver() {
     return receiver;
+  }
+
+  @Override
+  public String toString() {
+    Vehicle vehicle = (Vehicle) author;
+    return "{Information: from"+ vehicle.getId()+", cost: " + averageCost + "}";
   }
 }
