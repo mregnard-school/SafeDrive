@@ -59,7 +59,7 @@ public class Controller implements PropertyChangeListener {
     speedInput.setText("200");
     setUpListeners();
     iterationsInput.setText("25");
-    vehiclesInput.setText("25");
+    vehiclesInput.setText("3");
   }
 
   private void setUpListeners() {

@@ -18,7 +18,6 @@ import model.communication.message.Priority;
 import model.communication.message.RequestMove;
 import model.environment.Land;
 import model.environment.Road;
-import util.Logger;
 
 public class DumbMotion implements MotionStrategy {
 
@@ -39,6 +38,7 @@ public class DumbMotion implements MotionStrategy {
     Optional<Point> closest = findClosestPoint();
 
     if (!closest.isPresent()) {
+      System.out.println("ohé");
       idle();
       return;
     }
@@ -51,10 +51,12 @@ public class DumbMotion implements MotionStrategy {
     }
 
     // @todo [irindul-2018-12-02] : test
-    sendRequest(vehicle.get());
 
     //We're block so me wait
+    System.out.println("bloké");
     idle();
+    sendRequest(vehicle.get(), closest.get());
+
   }
 
   private void processAvailablePoints() {
@@ -103,13 +105,14 @@ public class DumbMotion implements MotionStrategy {
         .collect(Collectors.toList());
   }
 
-  private void sendRequest(Vehicle block) {
+  private void sendRequest(Vehicle block, Point point) {
     List<Receiver> receivers = Collections.singletonList(block);
 
     RequestMove requestMove = new RequestMove(
         agent,
         receivers,
-        Priority.MEDIUM
+        Priority.MEDIUM,
+        point
     );
     agent.invoke(requestMove);
   }

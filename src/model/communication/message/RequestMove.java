@@ -9,10 +9,10 @@ import model.communication.Receiver;
 public class RequestMove extends Message {
   private Point goal;
 
-  public RequestMove(Invoker author, List<Receiver> receivers, Priority priority) {
+  public RequestMove(Invoker author, List<Receiver> receivers, Priority priority, Point point) {
     super(author, receivers, priority);
     Vehicle vehicle = (Vehicle) author;
-    goal = ((Vehicle) author).getNextPos();
+    goal = point;
   }
 
   public Point getGoal() {
