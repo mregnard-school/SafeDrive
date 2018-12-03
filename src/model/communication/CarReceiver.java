@@ -14,6 +14,7 @@ public class CarReceiver implements Runnable, Receiver {
   transient private byte[] buf = new byte[2048];
   transient private Receiver receiver;
   transient private int port;
+  transient private boolean shouldRun = true;
 
   public CarReceiver(Receiver receiver) {
     try {
@@ -28,7 +29,7 @@ public class CarReceiver implements Runnable, Receiver {
 
   @Override
   public void run() {
-    while (!Thread.currentThread().isInterrupted()) {
+    while (shouldRun) {
       DatagramPacket packet = new DatagramPacket(buf, buf.length);
       try {
         socket.receive(packet);
@@ -82,6 +83,6 @@ public class CarReceiver implements Runnable, Receiver {
       socket.close();
       socket = null;
     }
-    Thread.currentThread().interrupt();
+    shouldRun = false;
   }
 }
