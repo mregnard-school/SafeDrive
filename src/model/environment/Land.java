@@ -4,7 +4,6 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import model.agents.Vehicle;
 import util.Intent;
@@ -108,6 +107,7 @@ public class Land {
     Point second;
     if (road.isHorizontal()) {
       first = Direction.NORTH.next(point);
+      //if (getRoadsForPoint(first))
       second = Direction.SOUTH.next(point);
     } else {
       first = Direction.EAST.next(point);

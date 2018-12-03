@@ -1,6 +1,7 @@
 package model.agents;
 
 import static util.PointOperations.getManhatanDistance;
+import static util.PointOperations.pointToString;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import model.communication.message.Priority;
 import model.communication.message.RequestMove;
 import model.environment.Land;
 import model.environment.Road;
+import util.Logger;
 
 public class DumbMotion implements MotionStrategy {
 
@@ -58,7 +60,26 @@ public class DumbMotion implements MotionStrategy {
   private void processAvailablePoints() {
     availablePoints = new ArrayList<>();
     processInRangeMovement();
+    if (agent.getId() == 2) {
+      agent.log("====Start===");
+      agent.log("pos = " + pointToString(agent.getCurrentPos()));
+      availablePoints.forEach(point -> {
+        Logger.log(pointToString(point));
+      });
+      Logger.log("adding extra");
+    }
+
+
     addExtraPoints();
+    if (agent.getId() == 2) {
+      availablePoints.forEach(point -> {
+        Logger.log(pointToString(point));
+      });
+      agent.log("====End===");
+    }
+
+
+
   }
 
   private void processInRangeMovement() {
