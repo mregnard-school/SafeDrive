@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import model.communication.message.Information;
 import model.communication.message.NoOption;
@@ -162,7 +163,14 @@ public class DumbMotion implements MotionStrategy {
   }
 
   private void awaitResponses() throws InterruptedException {
-    agent.getSem().acquire(conflictCount);
+    agent.log("Trying to acquire " + conflictCount);
+    if (!agent.getSem().tryAcquire(conflictCount, 1000, TimeUnit.MILLISECONDS)) {
+      // @todo [irindul-2018-12-03] : Sometimes (with 3 agent itération 13) the lock is never acquired
+      // @todo [irindul-2018-12-03] : After investigation, the message is never received... I don't know y but afterward all message are never received
+      // @todo [irindul-2018-12-03] : Maybe check with UDP or maybe a bug somewhere else but it's 4:29 am and I don't give a shit right now
+      throw new InterruptedException("Timeout exceeeded");
+    }
+    agent.log("Acquired ");
   }
 
   private Intent resolveWithOptions(double myCost) throws InterruptedException {
@@ -173,12 +181,14 @@ public class DumbMotion implements MotionStrategy {
 
     double maxOfOthers = otherCosts.stream().max(Double::compareTo).get();
     if (myCost > maxOfOthers) {
+      agent.log("Fuck it I go");
       //It's over Anakin, I have the high cost
       agent.setNextPos(myIntent.getTo());
       return myIntent;
     }
 
     if (myCost < maxOfOthers) {
+      agent.log("Alright I let you go");
       // You underestimate my cost
       agent.setNextPos(newClosest);
       return createIntent(newClosest);
@@ -210,6 +220,7 @@ public class DumbMotion implements MotionStrategy {
   }
 
   private void sendCost(double myCost, Intent intent) {
+    agent.log("Sending cost " + myCost + " to" + intent.getAgent().getId());
     agent.invoke(new Information(agent, myCost, intent.getAgent()));
   }
 }

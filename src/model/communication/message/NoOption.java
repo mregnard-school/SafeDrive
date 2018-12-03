@@ -16,6 +16,7 @@ public class NoOption implements Command {
   public void execute() {
     Vehicle vehicle = (Vehicle) receiver;
     Vehicle agent = Handler.getAgent(vehicle.getId());
+    agent.getSem().release(1);
     agent.setNoOption(true);
   }
 
