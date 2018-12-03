@@ -1,7 +1,6 @@
 package model.agents;
 
 import static util.PointOperations.getEuclidianDistance;
-import static util.PointOperations.pointToString;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -19,6 +18,7 @@ import model.communication.message.RequestMove;
 import model.environment.Land;
 import model.environment.Road;
 import util.Logger;
+import util.PointOperations;
 
 public class DumbMotion implements MotionStrategy {
 
@@ -73,6 +73,11 @@ public class DumbMotion implements MotionStrategy {
   }
 
   private void addExtraPoints() {
+    agent.log("====Start====");
+    availablePoints.stream()
+        .map(PointOperations::pointToString)
+        .forEach(Logger::log);
+
     List<Road> roads = agent
         .getLand()
         .getRoadsForPoint(agent.getCurrentPos())
@@ -81,9 +86,14 @@ public class DumbMotion implements MotionStrategy {
       return;
     }
     roads.forEach(road -> {
-      List<Point> points = agent.getLand().roadExit(road, agent.getCurrentPos());
+      List<Point> points = agent.getLand().laneSwitchers(agent.getCurrentPos(), road);
       availablePoints.addAll(points);
     });
+
+    availablePoints.stream()
+        .map(PointOperations::pointToString)
+        .forEach(Logger::log);
+    agent.log("==== END ====");
   }
 
   private List<Point> analyzeMessage() {

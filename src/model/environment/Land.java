@@ -133,6 +133,40 @@ public class Land {
   }
 
 
+  public List<Point> laneSwitchers(Point currentPos, Road currentRoad) {
+    List<Point> pointsToCheck = new ArrayList<>();
+    List<Point> switchers = new ArrayList<>();
+    pointsToCheck.add(Direction.NORTH.next(currentPos));
+    pointsToCheck.add(Direction.SOUTH.next(currentPos));
+    pointsToCheck.add(Direction.EAST.next(currentPos));
+    pointsToCheck.add(Direction.WEST.next(currentPos));
+
+    pointsToCheck.forEach(point -> {
+      if (!this.isInLand(point)) {
+        return;
+      }
+
+      List<Road> roads = getRoadsForPoint(point).collect(Collectors.toList());
+
+      if (roads.isEmpty()) {
+        return;
+      }
+
+      boolean shouldBeAdded = roads.stream().allMatch(road -> {
+        if (road.equals(currentRoad)) {
+          return road.getAxis().next(currentPos).equals(point);
+        }
+        return true;
+      });
+
+      if (shouldBeAdded) {
+        switchers.add(point);
+      }
+    });
+
+    return switchers;
+  }
+
   public int getWidth() {
     return width;
   }

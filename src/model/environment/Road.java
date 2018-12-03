@@ -90,4 +90,18 @@ public class Road {
   public String toString() {
     return "road: " + pivot + " " + getAxis();
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+
+    if (!(obj instanceof Road)) {
+      return false;
+    }
+
+    Road other = (Road) obj;
+    return this.getAxis().equals(other.getAxis()) && this.pivot == other.pivot;
+  }
 }
