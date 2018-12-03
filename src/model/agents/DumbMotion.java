@@ -107,44 +107,15 @@ public class DumbMotion implements MotionStrategy {
       agent.setNextPos(myIntent.getTo());
       return myIntent;
     }
-
+    for (Intent intent : intents) {
+      resolveConflict(intent, myIntent);
+    }
     //Send intent to conflicted
     Semaphore sem = locks.get(myIntent.getTo());
     this.agent.setSem(sem);
     try {
       sem.acquire();
-      if (availablePoints.isEmpty()) {
-        //@TODO warn other guy
-        //@TODO need to flip a coin
-        agent.setNextPos(myIntent.getTo());
-        return myIntent;
-      }
-      Point newClosest = availablePoints      //@TODO can be interesting to sort the list of availables points
-          .stream()
-          .filter(point -> !point.equals(myIntent.getTo()))
-          .min(Comparator
-              .comparing(point ->
-                  getEuclidianDistance(point, agent.getDestination()))
-          ).orElseThrow(IllegalStateException::new);
-      //@TODO if no available points from other guy, take the closest one
 
-      //@TODO send closest cost
-      //@TODO wait for answer
-      double otherCost = 1625676;
-      double myCost = getEuclidianDistance(newClosest, agent.getDestination());
-      if (otherCost < myCost) {   // I have the max cost so I should go first
-        agent.setNextPos(myIntent.getTo());
-        return myIntent;
-      }
-
-      if (otherCost > myCost) {
-        agent.setNextPos(newClosest);
-        return createIntent(newClosest);
-      }
-      for (Intent conflictIntent : intents) {
-        resolveConflict(myIntent, conflictIntent);
-      }
-      return null;
       return idle();
       // We are in the case we have the same cost
       //@TODO flip coin
