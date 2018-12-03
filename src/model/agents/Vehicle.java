@@ -92,7 +92,7 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
       if (dialoger == null) {
         dialoger = new DialogInvoker();
       }
-      dialoger.setReceiver(command.getReceivers().get(0));    //@TODO fix bug: got Exception in thread "Thread-12" java.lang.NullPointerException WTF
+      dialoger.setReceiver(command.getReceivers().get(0));
       dialoger.invoke(command);
     }
   }

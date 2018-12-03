@@ -107,11 +107,11 @@ public class Simulation {
     List<Vehicle> remaining = new ArrayList<>();
 
     // @todo [irindul-2018-12-02] : Handle problem with blocked car (no available points for it)
-    // @todo [irindul-2018-12-02] : Handle problem with available tile marked as unavalaible
 
     vehicles.forEach(vehicle -> {
       vehicle.run();
       Point next = vehicle.getNextPos();
+
       // @todo [irindul-2018-12-02] : Send multiple intents for same agent
       intents.addIntent(land.move(vehicle, next));
 

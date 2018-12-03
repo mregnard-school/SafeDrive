@@ -48,6 +48,7 @@ public class DumbMotion implements MotionStrategy {
       return;
     }
 
+    // @todo [irindul-2018-12-02] : test
     sendRequest(vehicle.get());
 
     //We're block so me wait
