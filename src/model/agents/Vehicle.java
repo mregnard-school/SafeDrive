@@ -120,7 +120,7 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   @Override
   public void run() {
-    motionStrategy.run(this, land);
+    motionStrategy.getIntent(this, land);
   }
 
   @Override

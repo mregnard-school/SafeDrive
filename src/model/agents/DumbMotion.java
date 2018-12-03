@@ -17,6 +17,7 @@ import model.communication.message.Priority;
 import model.communication.message.RequestMove;
 import model.environment.Land;
 import model.environment.Road;
+import util.Intent;
 
 public class DumbMotion implements MotionStrategy {
 
@@ -25,7 +26,7 @@ public class DumbMotion implements MotionStrategy {
   private List<Point> availablePoints;
 
   @Override
-  public void run(Vehicle agent, Land land) {
+  public Intent getIntent(Vehicle agent, Land land) {
     this.agent = agent;
     commands = agent.getCommands();
 
@@ -39,23 +40,21 @@ public class DumbMotion implements MotionStrategy {
     if (!closest.isPresent()) {
       System.out.println("ohé");
       idle();
-      return;
+      return null;
     }
 
     Optional<Vehicle> vehicle = agent.getLand().getVehicleAt(closest.get());
 
     if (!vehicle.isPresent()) {
       agent.setNextPos(closest.get());
-      return;
+      return null;
     }
-
-    // @todo [irindul-2018-12-02] : test
 
     //We're block so me wait
     System.out.println("bloké");
     idle();
     sendRequest(vehicle.get(), closest.get());
-
+    return  null; // @todo [irindul-2018-12-02] : change
   }
 
   private void processAvailablePoints() {
@@ -133,5 +132,10 @@ public class DumbMotion implements MotionStrategy {
 
   private void idle() {
     agent.setNextPos(agent.getCurrentPos());
+  }
+
+  @Override
+  public void run() {
+
   }
 }

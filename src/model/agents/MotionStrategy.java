@@ -1,8 +1,9 @@
 package model.agents;
 
 import model.environment.Land;
+import util.Intent;
 
-public interface MotionStrategy {
+public interface MotionStrategy extends Runnable{
 
-  void run(Vehicle agent, Land land);
+  Intent getIntent(Vehicle agent, Land land);
 }
