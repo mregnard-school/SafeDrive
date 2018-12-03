@@ -31,7 +31,7 @@ public class Vehicle implements Invoker, Receiver {
   private Point destination;
   private Point nextPos;
   private Queue<Command> commands;
-  private transient Land land; //Need to put that cause Optional which is in Land > Road is not serializable
+  private transient Land land;
   private transient Semaphore semaphore;
   private List<Double> costs;
   private boolean noOption;
@@ -80,7 +80,7 @@ public class Vehicle implements Invoker, Receiver {
 
   @Override
   public void receive(
-      Command command) { //Get type of message (if information -> send it right away)
+      Command command) {
     command.execute();
     commands.add(command);
   }

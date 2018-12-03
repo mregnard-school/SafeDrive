@@ -65,7 +65,7 @@ public class Land {
     return intent;
   }
 
-  private boolean isAvailable(Point point) {    //remove function cause the one below is better
+  private boolean isAvailable(Point point) {
     return getRoadsForPoint(point)
         .noneMatch(road -> road.vehicleAt(point).isPresent());
   }
