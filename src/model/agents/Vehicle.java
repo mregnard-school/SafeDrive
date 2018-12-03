@@ -74,13 +74,14 @@ public class Vehicle implements Invoker, Receiver {
     if (dialoger == null) {
       dialoger = new DialogInvoker();
     }
-
+    log("Sending: " + command.toString());
     dialoger.invoke(command);
   }
 
   @Override
   public void receive(
       Command command) {
+    log("Receiving: " + command.toString());
     command.execute();
     commands.add(command);
   }

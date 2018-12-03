@@ -34,8 +34,6 @@ public class Controller implements PropertyChangeListener {
   @FXML
   Button runButton;
 
-  @FXML
-  Button stopButton;
 
   @FXML
   Label iterationsLabel;
@@ -53,7 +51,6 @@ public class Controller implements PropertyChangeListener {
   public void initialize() {
     iterationsLabel.setText("-");
     runButton.setDisable(true);
-    stopButton.setDisable(true);
     speedInput.setText("200");
     setUpListeners();
     iterationsInput.setText("100");
@@ -120,7 +117,6 @@ public class Controller implements PropertyChangeListener {
     loop.addPropertyChangeListener(this);
     loop.startPause();
     new Thread(loop).start();
-    stopButton.setDisable(false);
   }
 
   @FXML
@@ -153,7 +149,6 @@ public class Controller implements PropertyChangeListener {
 
     runButton.setText("Run");
     iterationsLabel.setText("-");
-    stopButton.setDisable(true);
   }
 
   @Override

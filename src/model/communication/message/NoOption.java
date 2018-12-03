@@ -26,6 +26,6 @@ public class NoOption implements Command {
 
   @Override
   public String toString() {
-    return "{NoOption: for "+ receiver.getId() +"}";
+    return "No option";
   }
 }

@@ -32,6 +32,6 @@ public class Information implements Command {
   @Override
   public String toString() {
     Vehicle vehicle = (Vehicle) author;
-    return "{Information: from"+ vehicle.getId()+", cost: " + averageCost + "}";
+    return "Information: from "+ vehicle.getId()+", cost: " + Math.round(averageCost);
   }
 }
