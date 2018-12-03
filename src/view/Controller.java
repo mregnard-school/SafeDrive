@@ -11,7 +11,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.paint.Color;
 import model.agents.Vehicle;
 import model.environment.Simulation;
 import util.IntentList;
@@ -76,9 +75,9 @@ public class Controller implements PropertyChangeListener {
     );
     speedInput.textProperty().addListener(
         (observable, oldValue, newValue) -> {
-          if(ensureInteger(speedInput, newValue)) {
+          if (ensureInteger(speedInput, newValue)) {
             int speed = Integer.parseInt(newValue);
-            if(speed < 200) {
+            if (speed < 200) {
               speed = 200;
             }
             speedInput.setText(String.valueOf(speed));
@@ -168,6 +167,13 @@ public class Controller implements PropertyChangeListener {
       if ("simulation".equals(property)) {
         this.simulationUpdate(evt);
       }
+      if ("ended".equals(property)) {
+        Simulation simulation = (Simulation) evt.getNewValue();
+
+        grid.clearGrid();
+        grid.draw(simulation.getLand());
+
+      }
     });
   }
 
@@ -195,7 +201,7 @@ public class Controller implements PropertyChangeListener {
   }
 
   private void checkIfFinishedAndCleanUp() {
-    if(loop.shouldRun()) {
+    if (loop.shouldRun()) {
       return;
     }
 
