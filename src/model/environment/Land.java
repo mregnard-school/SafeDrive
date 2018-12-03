@@ -10,13 +10,11 @@ import util.Intent;
 public class Land {
 
   private List<Road> roads;
-  private List<Point> joins;
   private int width;
   private int height;
 
   public Land(int width, int height) {
     roads = new ArrayList<>();
-    joins = new ArrayList<>();
     this.width = width;
     this.height = height;
     createRoads(5);
