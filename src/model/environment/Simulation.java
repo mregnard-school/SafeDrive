@@ -11,6 +11,7 @@ import model.agents.Agent;
 import model.agents.DumbMotion;
 import model.agents.MotionStrategy;
 import model.agents.Vehicle;
+import util.Intent;
 import util.IntentList;
 
 public class Simulation {
@@ -18,6 +19,7 @@ public class Simulation {
   private int maxIterations;
   private int currentStep;
   private IntentList intents;
+  private IntentList intentsToSend;
   private Land land;
   private List<Vehicle> vehicles;
   private int width;
@@ -96,6 +98,7 @@ public class Simulation {
   private void step() {
     this.currentStep++;
     intents = new IntentList();
+    intentsToSend = new IntentList();
   }
 
   public void next() {
@@ -106,14 +109,14 @@ public class Simulation {
 
     List<Vehicle> remaining = new ArrayList<>();
 
-    // @todo [irindul-2018-12-02] : Handle problem with blocked car (no available points for it)
+    vehicles.parallelStream().forEach(vehicle -> {
+      Intent intent = vehicle.getIntent();
+      intents.addIntent(intent);
+    });
 
     vehicles.forEach(vehicle -> {
-      vehicle.run();
       Point next = vehicle.getNextPos();
-
-      // @todo [irindul-2018-12-02] : Send multiple intents for same agent
-      intents.addIntent(land.move(vehicle, next));
+      intentsToSend.addIntent(land.move(vehicle, next));
 
       if (vehicle.isArrived()) {
         land.getRoadsForPoint(vehicle.getCurrentPos())
