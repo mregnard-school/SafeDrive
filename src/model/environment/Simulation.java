@@ -14,6 +14,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Stream;
 import model.agents.DumbMotion;
+import model.agents.Handler;
 import model.agents.MotionStrategy;
 import model.agents.Vehicle;
 import util.Intent;
@@ -70,6 +71,7 @@ public class Simulation {
     agentInitialPositions.put(currentPosition, vehicle);
     this.vehicles.add(vehicle);
     land.updateRoadsFor(vehicle);
+    Handler.addAgent(vehicle);
   }
 
   private Point getValidPoint() {
@@ -116,14 +118,12 @@ public class Simulation {
     step();
 
     List<Vehicle> remaining = new ArrayList<>();
-    Map<Point, Semaphore> locks = new HashMap<>();
 
     vehicles.parallelStream().forEach(vehicle -> {
       Intent intent = vehicle.getIntent();
       intents.addIntent(intent);
 
-      Point next = intent.getTo();
-      locks.put(next, new Semaphore(0));
+      vehicle.setSem(new Semaphore(0));
     });
 
     List<Callable<Intent>> callables = new ArrayList<>();
@@ -131,7 +131,6 @@ public class Simulation {
     vehicles.forEach(vehicle -> {
       DumbMotion motion = (DumbMotion) vehicle.getMotionStrategy();
       motion.setIntents(intents);
-      motion.setLocks(locks);
       callables.add(motion);
     });
 
@@ -146,6 +145,7 @@ public class Simulation {
           land.getRoadsForPoint(vehicle.getCurrentPos())
               .forEach(road -> road.removeVehicle(vehicle.getCurrentPos()));
           vehicle.interrupt();
+          Handler.removeAgent(vehicle);
         } else {
           remaining.add(vehicle);
         }
@@ -171,7 +171,10 @@ public class Simulation {
   }
 
   public void interrupt() {
-    vehicles.forEach(Vehicle::interrupt);
+    vehicles.forEach(vehicle -> {
+      vehicle.interrupt();
+      Handler.removeAgent(vehicle);
+    });
   }
 
   public IntentList getInitialIntents() {

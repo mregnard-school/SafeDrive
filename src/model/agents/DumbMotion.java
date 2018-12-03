@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 import model.communication.message.Information;
 import model.environment.Road;
@@ -21,7 +19,7 @@ public class DumbMotion implements MotionStrategy {
   private Vehicle agent;
   private List<Point> availablePoints;
   private List<Intent> intents;
-  private Map<Point, Semaphore> locks;
+  private int conflictCount;
 
   @Override
   public Intent getIntent(Vehicle agent) {
@@ -74,7 +72,8 @@ public class DumbMotion implements MotionStrategy {
   }
 
   private Intent idle() {
-    agent.setNextPos(agent.getCurrentPos());    // need to be set, otherwise we can have null pointer exception
+    agent.setNextPos(
+        agent.getCurrentPos());    // need to be set, otherwise we can have null pointer exception
     return createIntent(agent.getCurrentPos());
   }
 
@@ -86,67 +85,30 @@ public class DumbMotion implements MotionStrategy {
     this.intents = intents.stream().collect(Collectors.toList());
   }
 
-  public void setLocks(Map<Point, Semaphore> locks) {
-    this.locks = locks;
-  }
-
   @Override
   public Intent call() {
-    Intent myIntent = intents
-        .stream()
-        .filter(intent -> intent
-            .getAgent()
-            .equals(agent))
-        .findAny()
-        .orElseThrow(IllegalStateException::new);
-    intents.remove(myIntent);
-    List<Intent> sameIntents = intents
-        .stream()
-        .filter(intent -> intent.equals(myIntent)).collect(Collectors.toList());
+    Intent myIntent = getMyIntent();
+    removeIntentFromList(myIntent);
 
-    if (sameIntents.isEmpty()) {    //No conflict is found
+    List<Intent> conflictIntents = intents
+        .stream()
+        .filter(intent -> intent.equals(myIntent))
+        .collect(Collectors.toList());
+
+    conflictCount = conflictIntents.size();
+
+    if (conflictIntents.isEmpty()) {    //No conflict is found
       agent.setNextPos(myIntent.getTo());
-      agent.log("Swag");
+      agent.log("Moved without conflict");
       return myIntent;
     }
-    agent.log("Acquiring and blocking");
 
-    for (Intent intent : intents) {
+    agent.log("I have  " + conflictIntents.size() + " conflict !!");
+
+    for (Intent intent : conflictIntents) {
       return resolveConflict(intent, myIntent);
     }
     return idle();
-  }
-
-  private double getCost() {
-    //@TODO receive cost
-    return 0;
-  }
-
-  private void sendCost(double myCost, Intent myIntent) {
-    //Send intent to conflicted
-    Semaphore sem = locks.get(myIntent.getTo());
-    this.agent.setSem(sem);
-    try {
-      myIntent.getAgent().invoke(new Information(agent, myCost, myIntent));
-      sem.acquire();
-
-      // We are in the case we have the same cost
-      //@TODO flip coin
-    } catch (InterruptedException e) {
-    } finally {
-      sem.release();
-    }
-    //@TODO
-  }
-
-  private void sendNoOption(Vehicle vehicle) {
-    //@TODO send message
-  }
-
-  public Information getAnswer() {
-
-
-    return null;
   }
 
   public Intent resolveConflict(Intent myIntent, Intent conflictIntent) {
@@ -154,17 +116,19 @@ public class DumbMotion implements MotionStrategy {
         .stream()
         .anyMatch(point -> !point.equals(myIntent.getTo()))) {
       sendNoOption(conflictIntent.getAgent());
+
       //@TODO need to flip a coin
       agent.setNextPos(myIntent.getTo());
-      return new Intent(agent.getCurrentPos(), agent.getNextPos(), agent);
+      return myIntent;
     }
-    Point newClosest = availablePoints      //@TODO can be interesting to sort the list of availables points
+    Point newClosest = availablePoints
         .stream()
         .filter(point -> !point.equals(myIntent.getTo()))
         .min(Comparator
             .comparing(point ->
                 getEuclidianDistance(point, agent.getDestination()))
         ).orElseThrow(IllegalStateException::new);
+
     //@TODO if no available points from other guy, take the closest one
     //@TODO send closest cost
     //@TODO wait for answer
@@ -173,23 +137,54 @@ public class DumbMotion implements MotionStrategy {
         .filter(point -> !point.equals(myIntent.getTo()))
         .mapToDouble(point ->
             getEuclidianDistance(point, agent.getDestination()))
-        .average().orElseThrow(IllegalStateException::new);   //We have check if available points is empty so it should return a double
+        .average().orElseThrow(
+            IllegalStateException::new);   //We have check if available points is empty so it should return a double
     sendCost(myCost, myIntent);
-    getAnswer();
-    double otherCost = getCost();
 
-    if (otherCost < myCost) {   // I have the max cost so I should go first
-      agent.setNextPos(myIntent.getTo());
-      return new Intent(agent.getCurrentPos(), agent.getNextPos(), agent);
+    try {
+      agent.getSem().acquire(conflictCount);
+      List<Double> otherCosts = agent.getCosts();
+
+      double maxOfOthers = otherCosts.stream().max(Double::compareTo).get();
+      if (myCost > maxOfOthers) {
+        //It's over Anakin, I have the high cost
+        agent.setNextPos(myIntent.getTo());
+        return myIntent;
+      }
+
+      if (myCost < maxOfOthers) {
+        agent.setNextPos(newClosest);
+        return createIntent(newClosest);
+      }
+
+      agent.log("We have the same priority");
+      return idle();
+
+      //@TODO flip coin
+    } catch (InterruptedException e) {
+      return idle();
+    }
+  }
+
+  private Intent getMyIntent() {
+    for (Intent intent : intents) {
+      if (intent.getAgent().getId() == agent.getId()) {
+        return intent;
+      }
     }
 
-    if (otherCost > myCost) {
-      agent.setNextPos(newClosest);
-      return new Intent(agent.getCurrentPos(), agent.getNextPos(), agent);
-    }
+    throw new IllegalStateException("No intent declared for agent " + agent.getId());
+  }
 
-    return idle();
-    // We are in the case we have the same cost
-    //@TODO flip coin
+  private void removeIntentFromList(Intent myIntent) {
+    intents.removeIf(intent -> intent.getAgent().getId() == myIntent.getAgent().getId());
+  }
+
+  private void sendCost(double myCost, Intent myIntent) {
+    myIntent.getAgent().invoke(new Information(agent, myCost, myIntent));
+  }
+
+  private void sendNoOption(Vehicle vehicle) {
+    //@TODO send message
   }
 }
