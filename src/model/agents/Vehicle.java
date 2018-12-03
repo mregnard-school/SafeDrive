@@ -90,8 +90,6 @@ public class Vehicle implements Invoker, Receiver {
 
   @Override
   public void invoke(Command command) {
-    log(command.toString());
-
     if (dialoger == null) {
       dialoger = new DialogInvoker();
     }
