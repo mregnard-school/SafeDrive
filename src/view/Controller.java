@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
+import model.agents.Vehicle;
 import model.environment.Simulation;
 import util.IntentList;
 import util.Logger;
@@ -104,7 +105,7 @@ public class Controller implements PropertyChangeListener {
     int width = grid.getWidth();
     int height = grid.getHeight();
     int nbAgents = Integer.parseInt(vehiclesInput.getText());
-
+    Vehicle.resetId();
     Simulation simulation = new Simulation(iterations, width, height, nbAgents);
     loop = new Loop(simulation);
     loop.setSpeed(Integer.parseInt(speedInput.getText()));

@@ -200,4 +200,8 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
     }
     return false;
   }
+
+  public static void resetId() {
+    nbVehicles = 1;
+  }
 }
