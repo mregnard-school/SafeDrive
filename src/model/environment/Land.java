@@ -2,26 +2,28 @@ package model.environment;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import model.agents.Vehicle;
+import util.Intent;
 
 public class Land {
 
-  private List<Vehicle> agents;
   private List<Road> roads;
   private List<Point> joins;
   private int width;
   private int height;
 
   public Land(int width, int height) {
-    agents = new ArrayList<>();
     roads = new ArrayList<>();
     joins = new ArrayList<>();
     this.width = width;
     this.height = height;
     createRoads(5);
+    //Logger.l
   }
 
   public void createRoads(int step) {
@@ -32,15 +34,19 @@ public class Land {
 
   public void createVerticalRoads(int step) {
     for (int i = 0; i < width; i += step) {
-      Road road = new Road(Direction.SOUTH, i);
-      roads.add(road);
+      roads.add(new Road(Direction.SOUTH, i));
+      if (i + 1 < width) {
+        roads.add(new Road(Direction.NORTH, i + 1));
+      }
     }
   }
 
   public void createHorizontalRoads(int step) {
     for (int i = 0; i < height; i += step) {
-      Road road = new Road(Direction.EAST, i);
-      roads.add(road);
+      roads.add(new Road(Direction.EAST, i));
+      if (i + 1 < height) {
+        roads.add(new Road(Direction.WEST, i + 1));
+      }
     }
   }
 
@@ -63,5 +69,105 @@ public class Land {
 
   public Stream<Road> getRoadsForPoint(Point point) {
     return roads.stream().filter(road -> road.contains(point));
+  }
+
+  public Intent move(Vehicle vehicle, Point next) {
+    if (!isAvailable(next)) {
+      return new Intent(vehicle.getCurrentPos(), vehicle.getCurrentPos(), vehicle);
+    }
+
+    Point currentPos = vehicle.getCurrentPos();
+    //vehicle.log("moved from " + currentPos + " to " + next);
+    Intent intent = new Intent(currentPos, next, vehicle);
+    getRoadsForPoint(currentPos).forEach(road -> road.removeVehicle(currentPos));
+    getRoadsForPoint(next).forEach(road -> road.addVehicle(next, vehicle));
+    vehicle.move();
+
+    return intent;
+  }
+
+  private boolean isAvailable(Point point) {    //remove function cause the one below is better
+    return getRoadsForPoint(point)
+        .noneMatch(road -> road.getVehicleAt(point).isPresent());
+  }
+
+  public Optional<Vehicle> getVehicleAt(Point point) {
+    return getRoadsForPoint(point)
+        .filter(road -> road.getVehicleAt(point).isPresent())
+        .map(road -> road.getVehicleAt(point).get())
+        .findFirst();
+  }
+
+  public void updateRoadsFor(Vehicle vehicle) {
+    getRoadsForPoint(vehicle.getCurrentPos())
+        .forEach(road -> road.addVehicle(vehicle.getCurrentPos(), vehicle));
+  }
+
+  public List<Point> roadExit(Road road, Point point) {
+    List<Point> points = new ArrayList<>();
+    Point first;
+    Point second;
+    Direction direction1;
+    Direction direction2;
+    if (road.isHorizontal()) {
+      direction1 = Direction.NORTH;
+      direction2 = Direction.SOUTH;
+    } else {
+      direction1 = Direction.EAST;
+      direction2 = Direction.WEST;
+    }
+
+    first = direction1.next(point);
+    second = direction2.next(point);
+    if (debg(first, direction1) && isInLand(first)) {
+      points.add(first);
+    }
+    if (debg(second, direction2) && isInLand(second)) {
+      points.add(second);
+    }
+    return points;
+  }
+
+  public List<Point> around(Point point) {
+    List<Point> points=  EnumSet.allOf(Direction.class).stream().map(direction -> {
+      Point next = direction.next(point);
+      if (!isInLand(next)) {
+        return null;
+      }
+      boolean tes = getRoadsForPoint(next)
+          .anyMatch(road ->
+              (road.getAxis()
+                  .equals(direction) || !road.getAxis()
+                      .equals(direction.opposite())));
+      if (tes) {
+        return next;
+      }
+      return null;
+      }).filter(point1 -> point != null).collect(Collectors.toList());
+    return points;
+  }
+
+  private boolean debg(Point point, Direction direction) {
+    if (!getRoadsForPoint(point).findAny().isPresent()) {
+      return false;
+    }
+    return getRoadsForPoint(point)
+        .noneMatch(road -> road.getAxis().equals(direction.opposite()));
+  }
+
+
+  public int getWidth() {
+    return width;
+  }
+
+  public int getHeight() {
+    return height;
+  }
+
+  public boolean isInLand(Point point) {
+    return point.y >= 0
+        && point.x >= 0
+        && point.y < getHeight()
+        && point.x < getWidth();
   }
 }

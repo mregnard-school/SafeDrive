@@ -12,7 +12,6 @@ import model.agents.DumbMotion;
 import model.agents.MotionStrategy;
 import model.agents.Vehicle;
 import util.IntentList;
-import util.Logger;
 
 public class Simulation {
 
@@ -44,16 +43,7 @@ public class Simulation {
     }
   }
 
-  public IntentList getInitialIntents() {
-    IntentList intentList = new IntentList();
-    this.vehicles.forEach(
-        vehicle -> intentList.addIntent(vehicle, vehicle.getCurrentPos(), vehicle.getCurrentPos())
-    );
-    return intentList;
-  }
-
   private void createAgent() {
-
     Point currentPosition = getValidPoint();
     Point destination;
     do {
@@ -66,29 +56,33 @@ public class Simulation {
     Direction direction = road.getAxis();
     MotionStrategy movement = new DumbMotion();
 
-    Vehicle vehicle = new Vehicle(currentPosition, destination, direction, movement);
+    Vehicle vehicle = new Vehicle(currentPosition, destination, direction, movement, land);
     agentInitialPositions.put(currentPosition, vehicle);
     this.vehicles.add(vehicle);
-
+    land.updateRoadsFor(vehicle);
   }
 
   private Point getValidPoint() {
     Point point;
-
     boolean isInvalidPoint;
     do {
-      int x = random.nextInt(width);
-      int y = random.nextInt(height);
-
-      point = new Point(x, y);
-      Stream<Road> roadStream = land.getRoadsForPoint(point);
-      boolean belongsToRoad = roadStream.findAny().isPresent();
-
-      Agent agent = agentInitialPositions.get(point);
-      isInvalidPoint = !belongsToRoad || (agent != null);
+      point = getRandomPoint();
+      isInvalidPoint = checkPointValidity(point);
     } while (isInvalidPoint);
 
     return point;
+  }
+
+  private Point getRandomPoint() {
+    return new Point(random.nextInt(width), random.nextInt(height));
+  }
+
+  private boolean checkPointValidity(Point point) {
+    Stream<Road> roadStream = land.getRoadsForPoint(point);
+    boolean belongsToRoad = roadStream.findAny().isPresent();
+    Agent agent = agentInitialPositions.get(point);
+    boolean isNullAgent = (agent == null);
+    return !(belongsToRoad && isNullAgent);
   }
 
   public int getMaxIterations() {
@@ -109,7 +103,28 @@ public class Simulation {
       return;
     }
     step();
-    Logger.log("Finished stepped " + currentStep);
+
+    List<Vehicle> remaining = new ArrayList<>();
+
+    // @todo [irindul-2018-12-02] : Handle problem with blocked car (no available points for it)
+
+    vehicles.forEach(vehicle -> {
+      vehicle.run();
+      Point next = vehicle.getNextPos();
+
+      // @todo [irindul-2018-12-02] : Send multiple intents for same agent
+      intents.addIntent(land.move(vehicle, next));
+
+      if (vehicle.isArrived()) {
+        land.getRoadsForPoint(vehicle.getCurrentPos())
+            .forEach(road -> road.removeVehicle(vehicle.getCurrentPos()));
+        vehicle.interrupt();
+      } else {
+        remaining.add(vehicle);
+      }
+    });
+
+    vehicles = remaining;
   }
 
   public boolean hasNext() {
@@ -128,5 +143,12 @@ public class Simulation {
     vehicles.forEach(Vehicle::interrupt);
   }
 
+  public IntentList getInitialIntents() {
+    IntentList intentList = new IntentList();
+    this.vehicles.forEach(
+        vehicle -> intentList.addIntent(vehicle, vehicle.getCurrentPos(), vehicle.getCurrentPos())
+    );
+    return intentList;
+  }
 
 }

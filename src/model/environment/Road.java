@@ -39,15 +39,18 @@ public class Road {
     exits.add(point);
   }
 
-  public void addVehicle(Vehicle vehicle) {
-    vehicles.put(vehicle.getCurrentPos(), Optional.of(vehicle));
+  public void addVehicle(Point point, Vehicle vehicle) {
+    vehicles.put(point, Optional.of(vehicle));
   }
 
-  public void removeVehicle(Vehicle vehicle) {
-    vehicles.put(vehicle.getCurrentPos(), Optional.empty());
+  public void removeVehicle(Point point) {
+    vehicles.put(point, Optional.empty());
   }
 
   public Optional<Vehicle> getVehicleAt(Point point) {
+    if (!vehicles.containsKey(point)) {
+      return Optional.empty();
+    }
     return vehicles.get(point);
   }
 
@@ -81,5 +84,10 @@ public class Road {
 
   public int getPivot() {
     return pivot;
+  }
+
+  @Override
+  public String toString() {
+    return "road: " + pivot + " " + getAxis();
   }
 }

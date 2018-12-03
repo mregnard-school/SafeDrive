@@ -1,39 +1,47 @@
 package model.agents;
 
+import static util.PointOperations.pointToString;
+
 import java.awt.Point;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.stream.Collectors;
 import model.communication.BroadcastInvoker;
 import model.communication.CarReceiver;
-import model.communication.Command;
 import model.communication.DialogInvoker;
 import model.communication.Invoker;
 import model.communication.Receiver;
 import model.communication.Router;
+import model.communication.message.Command;
+import model.communication.message.RequestInformation;
 import model.environment.Direction;
+import model.environment.Land;
+import model.environment.Road;
 import util.Logger;
 
 public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   private static int nbVehicles = 1;
 
-  private MotionStrategy motionStrategy;
+  private transient MotionStrategy motionStrategy;
   transient private BroadcastInvoker broadcaster;
-  transient private DialogInvoker dialoger;
+  private transient DialogInvoker dialoger;
   private CarReceiver receiver;
-  private int plate;
+  private int id;
   private int speed;
   private Point currentPos;
   private Point destination;
   private Point nextPos;
   private Direction direction;
   private Queue<Command> commands;
+  private transient Land land; //Need to put that cause Optional which is in Land > Road is not serializable
 
   private Vehicle() {
-    plate = nbVehicles++;
+    id = nbVehicles++;
     dialoger = new DialogInvoker();
     broadcaster = new BroadcastInvoker(dialoger);
     receiver = new CarReceiver(this);
@@ -46,19 +54,21 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
     } catch (UnknownHostException e) {
       e.printStackTrace();
     }
-
   }
 
   public Vehicle(Point currentPos,
       Point destination,
       Direction direction,
-      MotionStrategy motionStrategy) {
+      MotionStrategy motionStrategy,
+      Land land) {
     this();
     this.currentPos = currentPos;
     this.destination = destination;
     this.direction = direction;
     this.motionStrategy = motionStrategy;
     this.speed = 1;
+    this.land = land;
+    this.log(pointToString(destination));
   }
 
   public void accelerate(int acceleration) {
@@ -70,33 +80,47 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
   }
 
   public void move() {
-    nextPos = direction.next(currentPos);
+    this.currentPos = nextPos;
+    nextPos = null;
   }
 
   @Override
   public void invoke(Command command) {
-    if (command.getReceivers().size() == 1) {
+    log(command.toString());
+    if (command.getReceivers().size() > 1) {
+      broadcaster.invoke(command);
+    } else if (command.getReceivers().size() == 1) {
+      if (dialoger == null) {
+        dialoger = new DialogInvoker();
+      }
       dialoger.setReceiver(command.getReceivers().get(0));
       dialoger.invoke(command);
-    } else {
-      broadcaster.invoke(command);
     }
   }
 
   @Override
-  public void receive(Command command) {
-    Logger.log("Command received");
+  public List<Direction> getActions() {
+    return land.getRoadsForPoint(currentPos).map(Road::getAxis).collect(Collectors.toList());
+  }
+
+  @Override
+  public void receive(Command command) { //Get type of message (if information -> send it right away)
+    Logger.log("Command received:" + command.toString());
+    command.execute();
+    if (command instanceof RequestInformation) {    //we don't need to store
+      return;
+    }
     commands.add(command);
   }
 
   @Override
   public int getId() {
-    return plate;
+    return id;
   }
 
   @Override
   public void run() {
-    motionStrategy.run(this);
+    motionStrategy.run(this, land);
   }
 
   @Override
@@ -111,12 +135,12 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
     Vehicle other = (Vehicle) obj;
 
-    return this.plate == other.plate;
+    return this.id == other.id;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(plate);
+    return Objects.hash(id);
   }
 
   @Override
@@ -126,6 +150,10 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   public void setCurrentPos(Point currentPos) {
     this.currentPos = currentPos;
+  }
+
+  public Land getLand() {
+    return land;
   }
 
   @Override
@@ -138,10 +166,13 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
     return "Vehicule= {currentPos: "+ currentPos +", destination: " + "}" +destination;
   }
 
-  public int getPlate() {
-    return plate;
+  public void setNextPos(Point pos) {
+    nextPos = pos;
   }
 
+  public int getSpeed() {
+    return speed;
+  }
   public Point getCurrentPos() {
     return currentPos;
   }
@@ -154,7 +185,24 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
     receiver.interrupt();
   }
 
-  public void log() {
+  public void log(String logEntry) {
+    String prefix = "Agent-" + getId() + " : ";
+    Logger.log(prefix + logEntry);
+  }
 
+  public Point getDestination() {
+    return this.destination;
+  }
+
+  public boolean isArrived() {
+    if (this.currentPos.equals(destination)) {
+      log("is arrived !");
+      return true;
+    }
+    return false;
+  }
+
+  public static void resetId() {
+    nbVehicles = 1;
   }
 }

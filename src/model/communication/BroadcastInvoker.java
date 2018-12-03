@@ -1,5 +1,7 @@
 package model.communication;
 
+import model.communication.message.Command;
+
 public class BroadcastInvoker implements Invoker {
 
   private DialogInvoker dialogInvoker;

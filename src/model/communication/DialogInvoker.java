@@ -4,15 +4,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import model.communication.message.Command;
 
 public class DialogInvoker implements Invoker {
 
-  transient private DatagramSocket socket;
+  private DatagramSocket socket;
   private Receiver receiver;
 
   public DialogInvoker() {

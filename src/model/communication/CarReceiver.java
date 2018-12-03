@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import model.communication.message.Command;
 
 public class CarReceiver implements Runnable, Receiver {
 
@@ -17,7 +18,6 @@ public class CarReceiver implements Runnable, Receiver {
   public CarReceiver(Receiver receiver) {
     try {
       this.port = this.getAvailablePort();
-      System.out.println("Running on port " + port);
       this.socket = new DatagramSocket(port);
       this.receiver = receiver;
       new Thread(this).start();
@@ -42,7 +42,8 @@ public class CarReceiver implements Runnable, Receiver {
         this.receive(command);
 
       } catch (IOException e) {
-        e.printStackTrace();
+        //e.printStackTrace();
+        break;
       } catch (ClassNotFoundException e) {
         //Do nothing
       }
@@ -81,5 +82,6 @@ public class CarReceiver implements Runnable, Receiver {
       socket.close();
       socket = null;
     }
+    Thread.currentThread().interrupt();
   }
 }

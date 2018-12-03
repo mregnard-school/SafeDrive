@@ -1,14 +1,17 @@
 package view;
 
 import java.awt.Point;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import model.environment.Land;
 import model.environment.Road;
-import util.IntentList.Intent;
+import util.Intent;
 
 
 public class Grid {
@@ -18,11 +21,13 @@ public class Grid {
   private final Color ROAD_COLOR = Color.GRAY;
   private final Color STROKE_COLOR = Color.BLACK;
   private final Color CAR_COLOR = Color.RED;
+  private final Color DIRECTION_COLOR = Color.WHITE;
 
 
   //
   private GridPane pane = new GridPane();
   private Rectangle[][] rectangles;
+  Map<Rectangle, Text> rectangleStringMap;
   private int height;
   private int width;
 
@@ -31,6 +36,7 @@ public class Grid {
     this.height = nbRows;
     this.width = nbColumns;
     rectangles = new Rectangle[nbRows][nbColumns];
+    rectangleStringMap = new HashMap<>();
     drawView(width, height);
   }
 
@@ -40,7 +46,10 @@ public class Grid {
         StackPane stack = new StackPane();
         rectangles[i][j] = new Rectangle(i, j, width, height);
         rectangles[i][j].setFill(Color.WHITE);
-        stack.getChildren().addAll(rectangles[i][j]);
+        Text text = new Text("");
+        text.setFill(DIRECTION_COLOR);
+        rectangleStringMap.put(rectangles[i][j], text);
+        stack.getChildren().addAll(rectangles[i][j], text);
         getPane().add(stack, j, i );
 
       }
@@ -48,6 +57,10 @@ public class Grid {
   }
   
   public void clearGrid(){
+    rectangleStringMap.forEach((rectangle, text) -> {
+      rectangle.setFill(EMPTY_COLOR);
+      text.setText("");
+    });
     for (int i = 0; i < height; i++) {
       for (int j = 0; j < width; j++) {
         rectangles[i][j].setFill(EMPTY_COLOR);
@@ -92,16 +105,50 @@ public class Grid {
       } else {
         point = new Point(position, i);
       }
+      drawDirection(road, i, point);
       draw(point, ROAD_COLOR);
     }
   }
 
+  private void drawDirection(Road road, int i, Point point) {
+    String first = "";
+    String second = "";
+    switch (road.getAxis()) {
+      case NORTH:
+        first = "^";
+        second = "|";
+        break;
+      case SOUTH:
+        first = "|";
+        second = "v";
+        break;
+      case EAST:
+        first = "-";
+        second = ">";
+        break;
+      case WEST:
+        first = "<";
+        second = "-";
+        break;
+    }
+    if (i == 1) {
+      draw(point, ROAD_COLOR, first);
+    } else if (i == 2) {
+      draw(point, ROAD_COLOR, second);
+    }
+  }
+
   public void draw(Intent intent) {
-    draw(intent.getTo(), CAR_COLOR);
+    draw(intent.getTo(), CAR_COLOR, String.valueOf(intent.getPlateAgent()));
   }
 
   public void draw(Point point, Color color) {
     draw(point.x, point.y, color);
+  }
+
+  public void draw(Point point, Color color, String text) {
+    draw(point.x, point.y, color);
+    rectangleStringMap.get(rectangles[point.y][point.x]).setText(text);
   }
 
   public void setLayout(double x, double y) {

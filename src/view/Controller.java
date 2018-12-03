@@ -1,8 +1,8 @@
 package view;
 
+import java.awt.Point;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,13 +12,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
+import model.agents.Vehicle;
 import model.environment.Simulation;
 import util.IntentList;
 import util.Logger;
 
 public class Controller implements PropertyChangeListener {
 
-  private static final ObservableList<String> logs = FXCollections.observableArrayList();
+  private static ObservableList<String> logs = FXCollections.observableArrayList();
 
   private Loop loop;
 
@@ -54,10 +56,10 @@ public class Controller implements PropertyChangeListener {
     iterationsLabel.setText("-");
     runButton.setDisable(true);
     stopButton.setDisable(true);
-    speedInput.setText("1000");
+    speedInput.setText("200");
     setUpListeners();
-    iterationsInput.setText("5");
-    vehiclesInput.setText("5");
+    iterationsInput.setText("25");
+    vehiclesInput.setText("3");
   }
 
   private void setUpListeners() {
@@ -80,7 +82,10 @@ public class Controller implements PropertyChangeListener {
             if(speed < 200) {
               speed = 200;
             }
-            loop.setSpeed(speed);
+            speedInput.setText(String.valueOf(speed));
+            if (loop != null) {
+              loop.setSpeed(speed);
+            }
           }
         }
     );
@@ -96,13 +101,15 @@ public class Controller implements PropertyChangeListener {
   }
 
   public void resetSimulation() {
+    this.resetLogs();
     int iterations = Integer.parseInt(iterationsInput.getText());
     int width = grid.getWidth();
     int height = grid.getHeight();
     int nbAgents = Integer.parseInt(vehiclesInput.getText());
-
+    Vehicle.resetId();
     Simulation simulation = new Simulation(iterations, width, height, nbAgents);
     loop = new Loop(simulation);
+    loop.setSpeed(Integer.parseInt(speedInput.getText()));
     loop.startPause();
 
     PropertyChangeEvent evt = new PropertyChangeEvent(
@@ -167,8 +174,8 @@ public class Controller implements PropertyChangeListener {
 
   private void simulationUpdate(PropertyChangeEvent evt) {
     grid.clearGrid();
-
     grid.draw(loop.getSimulation().getLand());
+
     IntentList intents = (IntentList) evt.getNewValue();
     intents.stream().forEach(grid::draw);
     displayCurrentIteration();
@@ -199,6 +206,11 @@ public class Controller implements PropertyChangeListener {
   private void log(PropertyChangeEvent evt) {
     String newEntry = (String) evt.getNewValue();
     logs.add(newEntry);
+    logsList.setItems(logs);
+  }
+
+  private void resetLogs() {
+    logs = FXCollections.observableArrayList();
     logsList.setItems(logs);
   }
 
