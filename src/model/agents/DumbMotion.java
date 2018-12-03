@@ -70,14 +70,10 @@ public class DumbMotion implements MotionStrategy {
   }
 
   private void addExtraPoints() {
-//    System.out.println("début extra points");
     List<Road> roads = agent
         .getLand()
         .getRoadsForPoint(agent.getCurrentPos())
         .collect(Collectors.toList());
-    //We take the first one because there should @TODO here to pass someonex
-//    System.out.println("road autour");
-//    System.out.println(roads);
     if (roads.isEmpty()) {
       return;
     }
@@ -87,8 +83,6 @@ public class DumbMotion implements MotionStrategy {
       System.out.println(points);
       availablePoints.addAll(points);
     });
-//    System.out.println(availablePoints);
-//    System.out.println("fin extra points");
   }
 
   private List<Point> analyzeMessage() {
