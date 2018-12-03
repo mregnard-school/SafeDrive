@@ -160,7 +160,7 @@ public class Simulation {
   }
 
   public boolean hasNext() {
-    return getCurrentStep() < getMaxIterations();
+    return getCurrentStep() < getMaxIterations() && vehicles.size() > 0;
   }
 
   public IntentList getIntents() {

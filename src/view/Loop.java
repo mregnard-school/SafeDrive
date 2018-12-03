@@ -69,6 +69,8 @@ public class Loop implements Runnable {
         }
       }
 
+      support.firePropertyChange("ended", null, simulation);
+
       if (shoudInterrupt()) {
         this.interrupt();
       }
