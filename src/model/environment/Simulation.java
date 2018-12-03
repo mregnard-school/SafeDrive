@@ -115,6 +115,7 @@ public class Simulation {
     });
 
     vehicles.forEach(vehicle -> {
+      vehicle.run(intents);
       Point next = vehicle.getNextPos();
       intentsToSend.addIntent(land.move(vehicle, next));
 

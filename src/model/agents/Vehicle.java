@@ -22,9 +22,10 @@ import model.environment.Direction;
 import model.environment.Land;
 import model.environment.Road;
 import util.Intent;
+import util.IntentList;
 import util.Logger;
 
-public class Vehicle implements Agent, Runnable, Invoker, Receiver {
+public class Vehicle implements Agent, Invoker, Receiver {
 
   private static int nbVehicles = 1;
 
@@ -119,9 +120,8 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
     return id;
   }
 
-  @Override
-  public void run() {
-    motionStrategy.getIntent(this, land);
+  public void run(IntentList intentList) {
+    motionStrategy.run(intentList);
   }
 
   @Override

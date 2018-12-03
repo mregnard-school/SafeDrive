@@ -1,7 +1,6 @@
 package model.agents;
 
 import static util.PointOperations.getEuclidianDistance;
-import static util.PointOperations.pointToString;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -19,6 +18,7 @@ import model.communication.message.RequestMove;
 import model.environment.Land;
 import model.environment.Road;
 import util.Intent;
+import util.IntentList;
 
 public class DumbMotion implements MotionStrategy {
 
@@ -134,7 +134,7 @@ public class DumbMotion implements MotionStrategy {
   }
 
   @Override
-  public void run() {
+  public void run(IntentList intentList) {
     Intent myIntent = null;
     List<Intent> othersIntent = new ArrayList<>();
     if (othersIntent.stream().anyMatch(intent -> intent.equals(myIntent))) {
