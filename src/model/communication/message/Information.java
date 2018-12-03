@@ -15,7 +15,7 @@ public class Information implements Command {
   private Receiver receiver;
   private Intent intent;
 
-  public Information(Invoker author, double averageCost, Intent intent) {
+  public Information(Invoker author, double averageCost, Intent intent, Receiver receiver) {
     this.author = author;
     this.averageCost = averageCost;
     this.intent = intent;

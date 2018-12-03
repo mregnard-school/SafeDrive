@@ -20,6 +20,7 @@ public class DumbMotion implements MotionStrategy {
   private List<Point> availablePoints;
   private List<Intent> intents;
   private int conflictCount;
+  private Intent myIntent;
 
   @Override
   public Intent getIntent(Vehicle agent) {
@@ -87,81 +88,27 @@ public class DumbMotion implements MotionStrategy {
 
   @Override
   public Intent call() {
-    Intent myIntent = getMyIntent();
-    removeIntentFromList(myIntent);
+    this.myIntent = getMyIntent();
+    removeIntentFromList();
 
-    List<Intent> conflictIntents = intents
+    List<Intent> conflictedIntents = intents
         .stream()
         .filter(intent -> intent.equals(myIntent))
         .collect(Collectors.toList());
 
-    conflictCount = conflictIntents.size();
+    conflictCount = conflictedIntents.size();
 
-    if (conflictIntents.isEmpty()) {    //No conflict is found
+    if (conflictedIntents.isEmpty()) {
       agent.setNextPos(myIntent.getTo());
       agent.log("Moved without conflict");
       return myIntent;
     }
 
-    agent.log("I have  " + conflictIntents.size() + " conflict !!");
-
-    for (Intent intent : conflictIntents) {
-      return resolveConflict(intent, myIntent);
-    }
-    return idle();
-  }
-
-  public Intent resolveConflict(Intent myIntent, Intent conflictIntent) {
-    if (availablePoints
-        .stream()
-        .anyMatch(point -> !point.equals(myIntent.getTo()))) {
-      sendNoOption(conflictIntent.getAgent());
-
-      //@TODO need to flip a coin
-      agent.setNextPos(myIntent.getTo());
-      return myIntent;
-    }
-    Point newClosest = availablePoints
-        .stream()
-        .filter(point -> !point.equals(myIntent.getTo()))
-        .min(Comparator
-            .comparing(point ->
-                getEuclidianDistance(point, agent.getDestination()))
-        ).orElseThrow(IllegalStateException::new);
-
-    //@TODO if no available points from other guy, take the closest one
-    //@TODO send closest cost
-    //@TODO wait for answer
-    double myCost = availablePoints
-        .stream()
-        .filter(point -> !point.equals(myIntent.getTo()))
-        .mapToDouble(point ->
-            getEuclidianDistance(point, agent.getDestination()))
-        .average().orElseThrow(
-            IllegalStateException::new);   //We have check if available points is empty so it should return a double
-    sendCost(myCost, myIntent);
-
+    agent.log("I have  " + conflictedIntents.size() + " conflict !!");
     try {
-      agent.getSem().acquire(conflictCount);
-      List<Double> otherCosts = agent.getCosts();
-
-      double maxOfOthers = otherCosts.stream().max(Double::compareTo).get();
-      if (myCost > maxOfOthers) {
-        //It's over Anakin, I have the high cost
-        agent.setNextPos(myIntent.getTo());
-        return myIntent;
-      }
-
-      if (myCost < maxOfOthers) {
-        agent.setNextPos(newClosest);
-        return createIntent(newClosest);
-      }
-
-      agent.log("We have the same priority");
-      return idle();
-
-      //@TODO flip coin
+      return resolveConflicts(conflictedIntents);
     } catch (InterruptedException e) {
+      agent.log("Interrupted!!");
       return idle();
     }
   }
@@ -176,12 +123,89 @@ public class DumbMotion implements MotionStrategy {
     throw new IllegalStateException("No intent declared for agent " + agent.getId());
   }
 
-  private void removeIntentFromList(Intent myIntent) {
+  private void removeIntentFromList() {
     intents.removeIf(intent -> intent.getAgent().getId() == myIntent.getAgent().getId());
   }
 
-  private void sendCost(double myCost, Intent myIntent) {
-    myIntent.getAgent().invoke(new Information(agent, myCost, myIntent));
+  public Intent resolveConflicts(List<Intent> conflictedIntents) throws InterruptedException {
+    if (hasNoOtherOptions(myIntent)) {
+      conflictedIntents.forEach(intent -> sendNoOption(intent.getAgent()));
+      return resolveWithoutOption();
+    }
+
+    double myCost = calculateMyAverageLoss();
+    conflictedIntents.forEach(intent -> sendCost(myCost, intent));
+    return resolveWithOptions(myCost);
+  }
+
+  private boolean hasNoOtherOptions(Intent intent) {
+    return availablePoints
+        .stream()
+        .allMatch(point -> point.equals(intent.getTo()));
+  }
+
+  private Intent resolveWithoutOption() throws InterruptedException {
+    awaitResponses();
+    if (/*all others have other choices */ true) {
+      return myIntent;
+    }
+
+    // @todo [irindul-2018-12-03] : Flip a coin
+
+    return idle();
+  }
+
+  private void awaitResponses() throws InterruptedException {
+    agent.getSem().acquire(conflictCount);
+  }
+
+  private Intent resolveWithOptions(double myCost) throws InterruptedException {
+    Point newClosest = getSecondClosest();
+
+    awaitResponses();
+
+    List<Double> otherCosts = agent.getCosts();
+
+    double maxOfOthers = otherCosts.stream().max(Double::compareTo).get();
+    if (myCost > maxOfOthers) {
+      //It's over Anakin, I have the high cost
+      agent.setNextPos(myIntent.getTo());
+      return myIntent;
+    }
+
+    if (myCost < maxOfOthers) {
+      // I hate you
+      agent.setNextPos(newClosest);
+      return createIntent(newClosest);
+    }
+
+    agent.log("We have the same priority");
+    // @todo [irindul-2018-12-03] : flip a coin
+    return idle();
+  }
+
+  private Point getSecondClosest() {
+    return availablePoints
+        .stream()
+        .filter(point -> !point.equals(myIntent.getTo()))
+        .min(Comparator
+            .comparing(point ->
+                getEuclidianDistance(point, agent.getDestination()))
+        ).orElseThrow(IllegalStateException::new);
+  }
+
+  private double calculateMyAverageLoss() {
+    return availablePoints
+        .stream()
+        .filter(point -> !point.equals(myIntent.getTo()))
+        .mapToDouble(point ->
+            getEuclidianDistance(point, agent.getDestination()))
+        .average()
+        .orElseThrow(IllegalStateException::new);
+  }
+
+  private void sendCost(double myCost, Intent intent) {
+    myIntent.getAgent().invoke(new Information(agent, myCost, myIntent, intent.getAgent()));
   }
 
   private void sendNoOption(Vehicle vehicle) {
