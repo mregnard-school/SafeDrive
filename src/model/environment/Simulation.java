@@ -18,6 +18,7 @@ import model.agents.MotionStrategy;
 import model.agents.Vehicle;
 import util.Intent;
 import util.IntentList;
+import util.Logger;
 
 public class Simulation {
 
@@ -139,6 +140,7 @@ public class Simulation {
       for (Future result : results) {
         Intent intent = (Intent) result.get();
         Vehicle vehicle = intent.getAgent();
+
         intentsToSend.addIntent(land.move(vehicle, vehicle.getNextPos()));
         if (vehicle.isArrived()) {
           land.getRoadsForPoint(vehicle.getCurrentPos())
@@ -152,6 +154,7 @@ public class Simulation {
       e.printStackTrace();
     }
 
+    Logger.log("Finished step " + currentStep);
     vehicles = remaining;
   }
 
@@ -160,7 +163,7 @@ public class Simulation {
   }
 
   public IntentList getIntents() {
-    return this.intents;
+    return this.intentsToSend;
   }
 
   public Land getLand() {

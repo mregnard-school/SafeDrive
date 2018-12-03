@@ -105,8 +105,12 @@ public class DumbMotion implements MotionStrategy {
 
     if (sameIntents.isEmpty()) {    //No conflict is found
       agent.setNextPos(myIntent.getTo());
+      agent.log("Swag");
       return myIntent;
     }
+
+    agent.log("Acquiring and blocking");
+
     for (Intent intent : intents) {
       resolveConflict(intent, myIntent);
     }
