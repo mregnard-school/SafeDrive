@@ -1,12 +1,10 @@
 package model.agents;
 
-import model.environment.Land;
+import java.util.concurrent.Callable;
 import util.Intent;
-import util.IntentList;
 
-public interface MotionStrategy {
+public interface MotionStrategy extends Callable<Intent> {
 
   Intent getIntent(Vehicle agent);
 
-  void run(IntentList intentList);
 }

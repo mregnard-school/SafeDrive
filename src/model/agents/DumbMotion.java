@@ -17,6 +17,7 @@ public class DumbMotion implements MotionStrategy {
 
   private Vehicle agent;
   private List<Point> availablePoints;
+  private List<Intent> intents;
 
   @Override
   public Intent getIntent(Vehicle agent) {
@@ -78,10 +79,12 @@ public class DumbMotion implements MotionStrategy {
     return new Intent(agent.getCurrentPos(), to, agent);
   }
 
-  @Override
-  public void run(IntentList intentList) {
-    List<Intent> intents = intentList.stream().collect(Collectors.toList());
+  public void setIntents(IntentList intents) {
+    this.intents = intents.stream().collect(Collectors.toList());
+  }
 
+  @Override
+  public Intent call() {
     Intent myIntent = intents
         .stream()
         .filter(intent -> intent
@@ -92,14 +95,14 @@ public class DumbMotion implements MotionStrategy {
     intents.remove(myIntent);
     if (intents.stream().noneMatch(intent -> intent.equals(myIntent))) {
       agent.setNextPos(myIntent.getTo());
-      return;
+      return null;
     }
     //@TODO wait for answer
     if (availablePoints.isEmpty()) {
       //@TODO warn other guy
       //@TODO need to flip a coin
       agent.setNextPos(myIntent.getTo());
-      return;
+      return null;
     }
     Point newClosest = availablePoints      //@TODO can be interesting to sort the list of availables points
         .stream()
@@ -116,12 +119,15 @@ public class DumbMotion implements MotionStrategy {
     double myCost = getEuclidianDistance(newClosest, agent.getDestination());
     if (otherCost < myCost) {   // I have the max cost so I should go first
       agent.setNextPos(myIntent.getTo());
-      return;
+      return null;
     }
+
     if (otherCost > myCost) {
      agent.setNextPos(newClosest);
-     return;
+     return null;
     }
+
+    return null;
     // We are in the case we have the same cost
     //@TODO flip coin
   }
