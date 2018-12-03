@@ -23,6 +23,7 @@ public class Information implements Command {
   @Override
   public void execute() {
     Vehicle vehicle = (Vehicle) author;
+    System.out.println("Token should be released");
     vehicle.getSem().release(1);
   }
 
