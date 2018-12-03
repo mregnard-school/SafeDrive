@@ -150,7 +150,9 @@ public class DumbMotion implements MotionStrategy {
   }
 
   public Intent resolveConflict(Intent myIntent, Intent conflictIntent) {
-    if (availablePoints.isEmpty()) {
+    if (availablePoints
+        .stream()
+        .anyMatch(point -> !point.equals(myIntent.getTo()))) {
       sendNoOption(conflictIntent.getAgent());
       //@TODO need to flip a coin
       agent.setNextPos(myIntent.getTo());
