@@ -177,9 +177,6 @@ public class Controller implements PropertyChangeListener {
 
     IntentList intents = (IntentList) evt.getNewValue();
     intents.stream().forEach(grid::draw);
-    grid.draw(16, 13, Color.ALICEBLUE);
-    grid.draw(10, 5, Color.ALICEBLUE);
-    grid.draw(1, 7, Color.ALICEBLUE);
     displayCurrentIteration();
     checkIfFinishedAndCleanUp();
   }
