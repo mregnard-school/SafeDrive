@@ -154,6 +154,7 @@ public class Simulation {
       e.printStackTrace();
     }
 
+    Handler.resetCoins();
     Logger.log("Finished step " + currentStep);
     vehicles = remaining;
   }
