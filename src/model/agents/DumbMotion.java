@@ -1,7 +1,6 @@
 package model.agents;
 
 import static util.PointOperations.getEuclidianDistance;
-import static util.PointOperations.pointToString;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -62,7 +61,9 @@ public class DumbMotion implements MotionStrategy {
   private void processAvailablePoints() {
     availablePoints = new ArrayList<>();
     processInRangeMovement();
-    addExtraPoints();
+    if (availablePoints.isEmpty()) {
+      addExtraPoints();
+    }
   }
 
   private void processInRangeMovement() {
