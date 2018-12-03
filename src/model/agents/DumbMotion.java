@@ -153,11 +153,24 @@ public class DumbMotion implements MotionStrategy {
   private Intent resolveWithoutOption() throws InterruptedException {
     awaitResponses();
     if (!agent.hasNoOption()) {
+      agent.setNextPos(myIntent.getTo());
       return myIntent;
     }
 
-    // @todo [irindul-2018-12-03] : Flip a coin
+    if (flipACoin()) {
+      agent.log("Won the coin flip");
+      agent.setNextPos(myIntent.getTo());
+      return myIntent;
+    }
+
+    agent.log("Lost the coin flip");
+    agent.setNextPos(myIntent.getTo());
     return idle();
+  }
+
+  private boolean flipACoin() {
+    // @todo [irindul-2018-12-03] : test but whould be working
+    return Handler.flipACoinFor(myIntent.getTo());
   }
 
   private void awaitResponses() throws InterruptedException {
@@ -192,8 +205,13 @@ public class DumbMotion implements MotionStrategy {
       return createIntent(newClosest);
     }
 
-    agent.log("We have the same priority");
-    // @todo [irindul-2018-12-03] : flip a coin
+   if(flipACoin()) {
+     agent.log("Won the coin flip");
+     agent.setNextPos(myIntent.getTo());
+     return myIntent;
+   }
+
+    agent.log("Lost the coin flip");
     return idle();
   }
 
