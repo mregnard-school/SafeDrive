@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import model.agents.Vehicle;
 import util.Intent;
@@ -105,21 +106,30 @@ public class Land {
     List<Point> points = new ArrayList<>();
     Point first;
     Point second;
+    Direction direction1;
+    Direction direction2;
     if (road.isHorizontal()) {
-      first = Direction.NORTH.next(point);
-      //if (getRoadsForPoint(first))
-      second = Direction.SOUTH.next(point);
+      direction1 = Direction.NORTH;
+      direction2 = Direction.SOUTH;
     } else {
-      first = Direction.EAST.next(point);
-      second = Direction.WEST.next(point);
+      direction1 = Direction.EAST;
+      direction2 = Direction.WEST;
     }
-    if (getRoadsForPoint(first).findAny().isPresent() && isInLand(first)) {
+
+    first = direction1.next(point);
+    second = direction2.next(point);
+    if (debg(first, direction1) && isInLand(first)) {
       points.add(first);
     }
-    if (getRoadsForPoint(second).findAny().isPresent() && isInLand(second)) {
+    if (debg(second, direction2) && isInLand(second)) {
       points.add(second);
     }
     return points;
+  }
+
+  private boolean debg(Point point, Direction direction) {
+    return getRoadsForPoint(point)
+        .anyMatch(road -> road.getAxis() == direction);
   }
 
 
