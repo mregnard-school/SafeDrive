@@ -64,7 +64,7 @@ public class Loop implements Runnable {
         long durationInMs = TimeUnit.NANOSECONDS.toMillis(loopTime - currentTime);
         System.out.println(durationInMs);
 
-        if (durationInMs > 10) {
+        if (durationInMs > 100) {
           draw();
           currentTime = loopTime;
         } else {
