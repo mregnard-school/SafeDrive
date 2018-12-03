@@ -15,18 +15,6 @@ public class Intent {
     this.agent = agent;
   }
 
-  public Point getTo() {
-    return entry.getValue();
-  }
-
-  public int getPlateAgent() {
-    return agent.getId();
-  }
-
-  public Vehicle getAgent() {
-    return agent;
-  }
-
   @Override
   public boolean equals(Object obj) {
     if (obj == null) {
@@ -37,5 +25,21 @@ public class Intent {
     }
     Intent intent = (Intent) obj;
     return intent.getTo().equals(getTo());
+  }
+
+  @Override
+  public String toString() {
+    return "{Intent: "+ agent.getId()+"}";
+  }
+  public Point getTo() {
+    return entry.getValue();
+  }
+
+  public int getPlateAgent() {
+    return agent.getId();
+  }
+
+  public Vehicle getAgent() {
+    return agent;
   }
 }

@@ -175,7 +175,7 @@ public class Simulation {
   public IntentList getInitialIntents() {
     IntentList intentList = new IntentList();
     this.vehicles.forEach(
-        vehicle -> intentList.addIntent(vehicle, vehicle.getCurrentPos(), vehicle.getCurrentPos())
+        vehicle -> intentList.addIntent(new Intent(vehicle.getCurrentPos(), vehicle.getCurrentPos(), vehicle))
     );
     return intentList;
   }
