@@ -20,7 +20,7 @@ import util.Logger;
 
 public class Controller implements PropertyChangeListener {
 
-  private static final ObservableList<String> logs = FXCollections.observableArrayList();
+  private static ObservableList<String> logs = FXCollections.observableArrayList();
 
   private Loop loop;
 
@@ -101,6 +101,7 @@ public class Controller implements PropertyChangeListener {
   }
 
   public void resetSimulation() {
+    this.resetLogs();
     int iterations = Integer.parseInt(iterationsInput.getText());
     int width = grid.getWidth();
     int height = grid.getHeight();
@@ -208,6 +209,11 @@ public class Controller implements PropertyChangeListener {
   private void log(PropertyChangeEvent evt) {
     String newEntry = (String) evt.getNewValue();
     logs.add(newEntry);
+    logsList.setItems(logs);
+  }
+
+  private void resetLogs() {
+    logs = FXCollections.observableArrayList();
     logsList.setItems(logs);
   }
 
