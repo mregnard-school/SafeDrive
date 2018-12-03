@@ -17,7 +17,6 @@ import model.communication.Invoker;
 import model.communication.Receiver;
 import model.communication.Router;
 import model.communication.message.Command;
-import model.communication.message.RequestInformation;
 import model.environment.Direction;
 import model.environment.Land;
 import model.environment.Road;
@@ -25,7 +24,7 @@ import util.Intent;
 import util.IntentList;
 import util.Logger;
 
-public class Vehicle implements Agent, Invoker, Receiver {
+public class Vehicle implements Invoker, Receiver {
 
   private static int nbVehicles = 1;
 
@@ -100,7 +99,7 @@ public class Vehicle implements Agent, Invoker, Receiver {
     }
   }
 
-  @Override
+
   public List<Direction> getActions() {
     return land.getRoadsForPoint(currentPos).map(Road::getAxis).collect(Collectors.toList());
   }
@@ -109,9 +108,6 @@ public class Vehicle implements Agent, Invoker, Receiver {
   public void receive(Command command) { //Get type of message (if information -> send it right away)
     Logger.log("Command received:" + command.toString());
     command.execute();
-    if (command instanceof RequestInformation) {    //we don't need to store
-      return;
-    }
     commands.add(command);
   }
 
@@ -144,22 +140,8 @@ public class Vehicle implements Agent, Invoker, Receiver {
     return Objects.hash(id);
   }
 
-  @Override
-  public void setDirection(Direction direction) {
-    this.direction = direction;
-  }
-
-  public void setCurrentPos(Point currentPos) {
-    this.currentPos = currentPos;
-  }
-
   public Land getLand() {
     return land;
-  }
-
-  @Override
-  public Queue<Command> getCommands() {
-    return commands;
   }
 
   @Override
@@ -208,6 +190,6 @@ public class Vehicle implements Agent, Invoker, Receiver {
   }
 
   public Intent getIntent() {
-    return motionStrategy.getIntent(this, land);
+    return motionStrategy.getIntent(this);
   }
 }

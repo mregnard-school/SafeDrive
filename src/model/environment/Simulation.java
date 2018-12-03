@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Stream;
-import model.agents.Agent;
 import model.agents.DumbMotion;
 import model.agents.MotionStrategy;
 import model.agents.Vehicle;
@@ -25,7 +24,7 @@ public class Simulation {
   private int width;
   private int height;
   private Random random;
-  Map<Point, Agent> agentInitialPositions;
+  Map<Point, Vehicle> agentInitialPositions;
 
   public Simulation(int maxIterations, int width, int height, int nbAgent) {
     this.maxIterations = maxIterations;
@@ -82,7 +81,7 @@ public class Simulation {
   private boolean checkPointValidity(Point point) {
     Stream<Road> roadStream = land.getRoadsForPoint(point);
     boolean belongsToRoad = roadStream.findAny().isPresent();
-    Agent agent = agentInitialPositions.get(point);
+    Vehicle agent = agentInitialPositions.get(point);
     boolean isNullAgent = (agent == null);
     return !(belongsToRoad && isNullAgent);
   }
