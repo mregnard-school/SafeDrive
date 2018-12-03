@@ -21,6 +21,7 @@ import model.communication.message.RequestInformation;
 import model.environment.Direction;
 import model.environment.Land;
 import model.environment.Road;
+import util.Intent;
 import util.Logger;
 
 public class Vehicle implements Agent, Runnable, Invoker, Receiver {
@@ -204,5 +205,9 @@ public class Vehicle implements Agent, Runnable, Invoker, Receiver {
 
   public static void resetId() {
     nbVehicles = 1;
+  }
+
+  public Intent getIntent() {
+    return motionStrategy.getIntent(this, land);
   }
 }
