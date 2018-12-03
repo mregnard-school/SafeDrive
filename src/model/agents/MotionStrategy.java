@@ -6,7 +6,7 @@ import util.IntentList;
 
 public interface MotionStrategy {
 
-  Intent getIntent(Vehicle agent, Land land);
+  Intent getIntent(Vehicle agent);
 
   void run(IntentList intentList);
 }
