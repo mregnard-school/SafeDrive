@@ -4,17 +4,17 @@ import java.awt.Point;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
-import model.agents.Agent;
+import model.agents.Vehicle;
 
 public class IntentList {
 
-  private ConcurrentHashMap<Agent, Intent> intents;
+  private ConcurrentHashMap<Vehicle, Intent> intents;
 
   public IntentList() {
     intents = new ConcurrentHashMap<>();
   }
 
-  public void addIntent(Agent agent, Point from, Point to) {
+  public void addIntent(Vehicle agent, Point from, Point to) {
     Intent intent = new Intent(from, to, agent);
     intents.put(agent, intent);
   }

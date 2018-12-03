@@ -1,19 +1,18 @@
 package model.communication.message;
 
-import java.awt.Point;
 import java.util.Collections;
 import java.util.List;
 import model.communication.Receiver;
+import util.Intent;
 
 public class Information implements Command {
 
   private double averageCost;
-  private Point concerningPoint;
   private Receiver receiver;
+  private Intent intent;
 
-  public Information(double averageCost, Point concerningPoint) {
+  public Information(double averageCost, Intent intent) {
     this.averageCost = averageCost;
-    this.concerningPoint = concerningPoint;
   }
 
   @Override

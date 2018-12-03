@@ -3,14 +3,14 @@ package util;
 import java.awt.Point;
 import java.util.AbstractMap;
 import java.util.AbstractMap.SimpleEntry;
-import model.agents.Agent;
+import model.agents.Vehicle;
 
 public class Intent {
 
   private AbstractMap.Entry<Point, Point> entry;
-  private Agent agent;
+  private Vehicle agent;
 
-  public Intent(Point from, Point to, Agent agent) {
+  public Intent(Point from, Point to, Vehicle agent) {
     entry = new SimpleEntry<>(from, to);
     this.agent = agent;
   }
@@ -27,7 +27,7 @@ public class Intent {
     return agent.getId();
   }
 
-  public Agent getAgent() {
+  public Vehicle getAgent() {
     return agent;
   }
 
