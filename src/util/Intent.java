@@ -30,4 +30,16 @@ public class Intent {
   public Agent getAgent() {
     return agent;
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (!(obj instanceof Intent)) {
+      return false;
+    }
+    Intent intent = (Intent) obj;
+    return intent.getTo().equals(getTo());
+  }
 }
