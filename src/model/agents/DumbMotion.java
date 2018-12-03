@@ -82,43 +82,34 @@ public class DumbMotion implements MotionStrategy {
   public void run(IntentList intentList) {
     List<Intent> intents = intentList.stream().collect(Collectors.toList());
 
-    Optional<Intent> opt = intents
+    Intent myIntent = intents
         .stream()
         .filter(intent -> intent
             .getAgent()
             .equals(agent))
-        .findAny();
-    if (opt.isPresent()) {
-      System.out.println("No intent for this agent: " + agent);
-      return;
-    }
-    Intent myIntent = opt.get();
+        .findAny()
+        .orElseThrow(IllegalStateException::new);
     intents.remove(myIntent);
-    if (intents.stream().anyMatch(intent -> intent.equals(myIntent))) {
+    if (intents.stream().noneMatch(intent -> intent.equals(myIntent))) {
       agent.setNextPos(myIntent.getTo());
-      return; //@TODO get to next position
+      return;
     }
     if (availablePoints.isEmpty()) {
       //@TODO warn other guy
       agent.setNextPos(myIntent.getTo());
       return;
     }
-    Optional<Point> optionalPoint = availablePoints      //@TODO can be interesting to sort the list of availables points
+    Point newClosest = availablePoints      //@TODO can be interesting to sort the list of availables points
         .stream()
         .filter(point -> !point.equals(myIntent.getTo()))
         .min(Comparator
             .comparing(point ->
                 getEuclidianDistance(point, agent.getDestination()))
-        );
-    if (!optionalPoint.isPresent()) {
-      System.out.println("Closest is not present why ?");
-      return;
-    }
+        ).orElseThrow(IllegalStateException::new);
+
     //@TODO send closest
-    //@TODO receive closest
-    Point newClosest = optionalPoint.get();
-    Intent otherIntent = null;
-    Vehicle vehicle = (Vehicle) otherIntent.getAgent();
+    Intent otherIntent = null;      //@TODO receive min cost from other because conflict
+    Vehicle vehicle = otherIntent.getAgent();
     if (getEuclidianDistance(otherIntent.getTo(), vehicle.getDestination()) < getEuclidianDistance(newClosest, agent.getDestination())) {   // I have the max cost so I should go first
       agent.setNextPos(myIntent.getTo());
       return;
