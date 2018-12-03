@@ -135,6 +135,16 @@ public class DumbMotion implements MotionStrategy {
 
   @Override
   public void run() {
+    Intent myIntent = null;
+    List<Intent> othersIntent = new ArrayList<>();
+    if (othersIntent.stream().anyMatch(intent -> intent.equals(myIntent))) {
+      agent.setNextPos(myIntent.getTo());
+      return; //@TODO get to next position
+    }
+    if (availablePoints.isEmpty()) {
+      //@TODO warn other guy
+      agent.setNextPos(myIntent.getTo());
+    }
 
   }
 }
