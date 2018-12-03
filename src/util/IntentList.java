@@ -1,18 +1,17 @@
 package util;
 
 import java.awt.Point;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 import model.agents.Agent;
 
 public class IntentList {
 
-  private Map<Agent, Intent> intents;
+  private ConcurrentHashMap<Agent, Intent> intents;
 
   public IntentList() {
-    intents = new HashMap<>();
+    intents = new ConcurrentHashMap<>();
   }
 
   public void addIntent(Agent agent, Point from, Point to) {
