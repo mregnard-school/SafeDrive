@@ -68,9 +68,10 @@ public class Loop implements Runnable {
           currentTime = loopTime;
         }
       }
-
-      support.firePropertyChange("ended", null, simulation);
-
+      if (simulation.isEnded()) {
+        System.out.println("simulation ended");
+        support.firePropertyChange("ended", null, simulation);
+      }
       if (shoudInterrupt()) {
         this.interrupt();
       }

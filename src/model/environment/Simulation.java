@@ -185,4 +185,8 @@ public class Simulation {
     );
     return intentList;
   }
+
+  public boolean isEnded() {
+    return vehicles.isEmpty();
+  }
 }
