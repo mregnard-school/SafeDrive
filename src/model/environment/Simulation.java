@@ -6,6 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Stream;
 import model.agents.DumbMotion;
 import model.agents.MotionStrategy;
@@ -25,6 +30,8 @@ public class Simulation {
   private int height;
   private Random random;
   Map<Point, Vehicle> agentInitialPositions;
+  private final ExecutorService executorService = Executors
+      .newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
   public Simulation(int maxIterations, int width, int height, int nbAgent) {
     this.maxIterations = maxIterations;
@@ -113,19 +120,31 @@ public class Simulation {
       intents.addIntent(intent);
     });
 
-    vehicles.forEach(vehicle -> {
-      vehicle.run(intents);
-      Point next = vehicle.getNextPos();
-      intentsToSend.addIntent(land.move(vehicle, next));
+    List<Callable<Intent>> callables = new ArrayList<>();
 
-      if (vehicle.isArrived()) {
-        land.getRoadsForPoint(vehicle.getCurrentPos())
-            .forEach(road -> road.removeVehicle(vehicle.getCurrentPos()));
-        vehicle.interrupt();
-      } else {
-        remaining.add(vehicle);
-      }
+    vehicles.forEach(vehicle -> {
+      DumbMotion motion = (DumbMotion) vehicle.getMotionStrategy();
+      motion.setIntents(intents);
+      callables.add(motion);
     });
+
+    try {
+      List<Future<Intent>> results = executorService.invokeAll(callables);
+      for (Future result : results) {
+        Intent intent = (Intent) result.get();
+        Vehicle vehicle = intent.getAgent();
+        intentsToSend.addIntent(land.move(vehicle, vehicle.getNextPos()));
+        if (vehicle.isArrived()) {
+          land.getRoadsForPoint(vehicle.getCurrentPos())
+              .forEach(road -> road.removeVehicle(vehicle.getCurrentPos()));
+          vehicle.interrupt();
+        } else {
+          remaining.add(vehicle);
+        }
+      }
+    } catch (InterruptedException | ExecutionException e) {
+      e.printStackTrace();
+    }
 
     vehicles = remaining;
   }
@@ -153,5 +172,4 @@ public class Simulation {
     );
     return intentList;
   }
-
 }

@@ -21,7 +21,6 @@ import model.environment.Direction;
 import model.environment.Land;
 import model.environment.Road;
 import util.Intent;
-import util.IntentList;
 import util.Logger;
 
 public class Vehicle implements Invoker, Receiver {
@@ -116,10 +115,6 @@ public class Vehicle implements Invoker, Receiver {
     return id;
   }
 
-  public void run(IntentList intentList) {
-    motionStrategy.run(intentList);
-  }
-
   @Override
   public boolean equals(Object obj) {
     if (obj == null) {
@@ -191,5 +186,9 @@ public class Vehicle implements Invoker, Receiver {
 
   public Intent getIntent() {
     return motionStrategy.getIntent(this);
+  }
+
+  public MotionStrategy getMotionStrategy() {
+    return motionStrategy;
   }
 }
