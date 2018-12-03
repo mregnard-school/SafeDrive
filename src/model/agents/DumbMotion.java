@@ -1,6 +1,6 @@
 package model.agents;
 
-import static util.PointOperations.getManhatanDistance;
+import static util.PointOperations.getEuclidianDistance;
 import static util.PointOperations.pointToString;
 
 import java.awt.Point;
@@ -142,7 +142,7 @@ public class DumbMotion implements MotionStrategy {
 
     Point closest = Collections.min(
         availablePoints,
-        Comparator.comparing(point -> getManhatanDistance(point, agent.getDestination()))
+        Comparator.comparing(point -> getEuclidianDistance(point, agent.getDestination()))
     );
 
     return Optional.of(closest);
