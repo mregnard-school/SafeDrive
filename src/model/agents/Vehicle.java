@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 import model.communication.BroadcastInvoker;
 import model.communication.CarReceiver;
@@ -39,6 +40,7 @@ public class Vehicle implements Invoker, Receiver {
   private Direction direction;
   private Queue<Command> commands;
   private transient Land land; //Need to put that cause Optional which is in Land > Road is not serializable
+  private transient Semaphore semaphore;
 
   private Vehicle() {
     id = nbVehicles++;
@@ -190,5 +192,13 @@ public class Vehicle implements Invoker, Receiver {
 
   public MotionStrategy getMotionStrategy() {
     return motionStrategy;
+  }
+
+  public void setSem(Semaphore sem) {
+    this.semaphore = sem;
+  }
+
+  public Semaphore getSem() {
+    return this.semaphore;
   }
 }

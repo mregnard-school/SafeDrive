@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 import java.util.stream.Stream;
 import model.agents.DumbMotion;
 import model.agents.MotionStrategy;
@@ -114,10 +115,14 @@ public class Simulation {
     step();
 
     List<Vehicle> remaining = new ArrayList<>();
+    Map<Point, Semaphore> locks = new HashMap<>();
 
     vehicles.parallelStream().forEach(vehicle -> {
       Intent intent = vehicle.getIntent();
       intents.addIntent(intent);
+
+      Point next = intent.getTo();
+      locks.put(next, new Semaphore(0));
     });
 
     List<Callable<Intent>> callables = new ArrayList<>();
@@ -125,6 +130,7 @@ public class Simulation {
     vehicles.forEach(vehicle -> {
       DumbMotion motion = (DumbMotion) vehicle.getMotionStrategy();
       motion.setIntents(intents);
+      motion.setLocks(locks);
       callables.add(motion);
     });
 
