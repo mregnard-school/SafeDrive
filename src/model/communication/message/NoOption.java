@@ -1,7 +1,7 @@
 package model.communication.message;
 
-import java.util.Collections;
-import java.util.List;
+import model.agents.Handler;
+import model.agents.Vehicle;
 import model.communication.Receiver;
 
 public class NoOption implements Command {
@@ -14,11 +14,13 @@ public class NoOption implements Command {
 
   @Override
   public void execute() {
-
+    Vehicle vehicle = (Vehicle) receiver;
+    Vehicle agent = Handler.getAgent(vehicle.getId());
+    agent.setNoOption(true);
   }
 
   @Override
-  public List<Receiver> getReceivers() {
-    return Collections.singletonList(receiver);
+  public Receiver getReceiver() {
+    return receiver;
   }
 }
