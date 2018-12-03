@@ -4,6 +4,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.TimeUnit;
 import model.environment.Simulation;
 import util.IntentList;
 
@@ -51,7 +52,7 @@ public class Loop implements Runnable {
 
   @Override
   public void run() {
-    long currentTime = System.currentTimeMillis();
+    long currentTime = System.nanoTime();
     while (!this.isInterrupted()) {
       while (shouldRun()) {
         if (simulation.hasNext()) {
@@ -59,11 +60,15 @@ public class Loop implements Runnable {
           buffer.add(simulation.getIntents());
         }
 
-        long loopTime = System.currentTimeMillis();
+        long loopTime = System.nanoTime();
+        long durationInMs = TimeUnit.NANOSECONDS.toMillis(loopTime - currentTime);
+        System.out.println(durationInMs);
 
-        if (loopTime - currentTime > speed) {
+        if (durationInMs > 10) {
           draw();
           currentTime = loopTime;
+        } else {
+          System.out.println(loopTime - currentTime);
         }
       }
 
