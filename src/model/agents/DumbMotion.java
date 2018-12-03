@@ -106,9 +106,8 @@ public class DumbMotion implements MotionStrategy {
         ).orElseThrow(IllegalStateException::new);
 
     //@TODO send closest
-    Intent otherIntent = null;      //@TODO receive min cost from other because conflict
-    Vehicle vehicle = otherIntent.getAgent();
-    if (getEuclidianDistance(otherIntent.getTo(), vehicle.getDestination()) < getEuclidianDistance(newClosest, agent.getDestination())) {   // I have the max cost so I should go first
+    double otherCost = 1625676;
+    if (otherCost < getEuclidianDistance(newClosest, agent.getDestination())) {   // I have the max cost so I should go first
       agent.setNextPos(myIntent.getTo());
       return;
     }
