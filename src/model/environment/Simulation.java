@@ -149,7 +149,8 @@ public class Simulation {
       e.printStackTrace();
     }
     Handler.resetCoins();
-    Logger.log("Finished step: " + currentStep);
+    Logger.log("Finished step: " + currentStep + "/" + maxIterations);
+    Logger.log("Remaining vehicles: " + remaining.size());
     vehicles = remaining;
   }
 

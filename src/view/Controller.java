@@ -136,11 +136,6 @@ public class Controller implements PropertyChangeListener {
     loop.startPause();
   }
 
-  @FXML
-  private void stopSimulation(ActionEvent event) {
-    deleteSimulation();
-  }
-
   private void deleteSimulation() {
     if (loop != null) {
       loop.interrupt();

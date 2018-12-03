@@ -13,8 +13,8 @@ public class App extends Application {
   private static int WIDTH = 1200;
   private static int HEIGHT = 800;
 
-  private static int WIDTH_GRID = 400;
-  private static int HEIGHT_GRID  = 450;
+  private static int WIDTH_GRID = 500;
+  private static int HEIGHT_GRID  = 600;
   @Override
   public void start(Stage primaryStage) {
     this.stage = primaryStage;
