@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
+import model.communication.message.Information;
 import model.environment.Road;
 import util.Intent;
 import util.IntentList;
@@ -98,7 +99,11 @@ public class DumbMotion implements MotionStrategy {
         .findAny()
         .orElseThrow(IllegalStateException::new);
     intents.remove(myIntent);
-    if (intents.stream().noneMatch(intent -> intent.equals(myIntent))) {
+    List<Intent> sameIntents = intents
+        .stream()
+        .filter(intent -> intent.equals(myIntent)).collect(Collectors.toList());
+
+    if (sameIntents.isEmpty()) {    //No conflict is found
       agent.setNextPos(myIntent.getTo());
       return myIntent;
     }
@@ -136,7 +141,10 @@ public class DumbMotion implements MotionStrategy {
         agent.setNextPos(newClosest);
         return createIntent(newClosest);
       }
-
+      for (Intent conflictIntent : intents) {
+        resolveConflict(myIntent, conflictIntent);
+      }
+      return null;
       return idle();
       // We are in the case we have the same cost
       //@TODO flip coin
@@ -147,5 +155,66 @@ public class DumbMotion implements MotionStrategy {
     }
 
 
+  }
+
+  private double getCost() {
+    //@TODO receive cost
+    return 0;
+  }
+
+  private void sendCost(double myCost) {
+    //@TODO
+  }
+
+  private void sendNoOption(Vehicle vehicle) {
+    //@TODO send message
+  }
+
+  public Information getAnswer() {
+    //@TODO receive message
+    return null;
+  }
+
+  public void resolveConflict(Intent myIntent, Intent conflictIntent) {
+
+    if (availablePoints.isEmpty()) {
+      sendNoOption(conflictIntent.getAgent());
+      //@TODO need to flip a coin
+      agent.setNextPos(myIntent.getTo());
+      return;
+    }
+    Point newClosest = availablePoints      //@TODO can be interesting to sort the list of availables points
+        .stream()
+        .filter(point -> !point.equals(myIntent.getTo()))
+        .min(Comparator
+            .comparing(point ->
+                getEuclidianDistance(point, agent.getDestination()))
+        ).orElseThrow(IllegalStateException::new);
+    //@TODO if no available points from other guy, take the closest one
+    //@TODO send closest cost
+    //@TODO wait for answer
+    double myCost = availablePoints
+        .stream()
+        .filter(point -> !point.equals(myIntent.getTo()))
+        .mapToDouble(point ->
+            getEuclidianDistance(point, agent.getDestination()))
+        .average().orElseThrow(IllegalStateException::new);   //We have check if available points is empty so it should return a double
+    sendCost(myCost);
+    getAnswer();
+    double otherCost = getCost();
+
+    if (otherCost < myCost) {   // I have the max cost so I should go first
+      agent.setNextPos(myIntent.getTo());
+      return;
+    }
+
+    if (otherCost > myCost) {
+      agent.setNextPos(newClosest);
+      return;
+    }
+
+    return;
+    // We are in the case we have the same cost
+    //@TODO flip coin
   }
 }
