@@ -109,29 +109,12 @@ public class DumbMotion implements MotionStrategy {
       agent.log("Swag");
       return myIntent;
     }
-    return idle();
-//
-//    agent.log("Acquiring and blocking");
-//
-//    for (Intent intent : intents) {
-//      resolveConflict(intent, myIntent);
-//    }
-//    //Send intent to conflicted
-//    Semaphore sem = locks.get(myIntent.getTo());
-//    this.agent.setSem(sem);
-//    try {
-//      sem.acquire();
-//
-//      return idle();
-//      // We are in the case we have the same cost
-//      //@TODO flip coin
-//    } catch (InterruptedException e) {
-//      return idle();
-//    } finally {
-//      sem.release();
-//    }
-//
+    agent.log("Acquiring and blocking");
 
+    for (Intent intent : intents) {
+      return resolveConflict(intent, myIntent);
+    }
+    return idle();
   }
 
   private double getCost() {
@@ -139,7 +122,20 @@ public class DumbMotion implements MotionStrategy {
     return 0;
   }
 
-  private void sendCost(double myCost) {
+  private void sendCost(double myCost, Intent myIntent) {
+    //Send intent to conflicted
+    Semaphore sem = locks.get(myIntent.getTo());
+    this.agent.setSem(sem);
+    try {
+      myIntent.getAgent().invoke(new Information(agent, myCost, myIntent));
+      sem.acquire();
+
+      // We are in the case we have the same cost
+      //@TODO flip coin
+    } catch (InterruptedException e) {
+    } finally {
+      sem.release();
+    }
     //@TODO
   }
 
@@ -148,17 +144,17 @@ public class DumbMotion implements MotionStrategy {
   }
 
   public Information getAnswer() {
-    //@TODO receive message
+
+
     return null;
   }
 
-  public void resolveConflict(Intent myIntent, Intent conflictIntent) {
-
+  public Intent resolveConflict(Intent myIntent, Intent conflictIntent) {
     if (availablePoints.isEmpty()) {
       sendNoOption(conflictIntent.getAgent());
       //@TODO need to flip a coin
       agent.setNextPos(myIntent.getTo());
-      return;
+      return new Intent(agent.getCurrentPos(), agent.getNextPos(), agent);
     }
     Point newClosest = availablePoints      //@TODO can be interesting to sort the list of availables points
         .stream()
@@ -176,21 +172,21 @@ public class DumbMotion implements MotionStrategy {
         .mapToDouble(point ->
             getEuclidianDistance(point, agent.getDestination()))
         .average().orElseThrow(IllegalStateException::new);   //We have check if available points is empty so it should return a double
-    sendCost(myCost);
+    sendCost(myCost, myIntent);
     getAnswer();
     double otherCost = getCost();
 
     if (otherCost < myCost) {   // I have the max cost so I should go first
       agent.setNextPos(myIntent.getTo());
-      return;
+      return new Intent(agent.getCurrentPos(), agent.getNextPos(), agent);
     }
 
     if (otherCost > myCost) {
       agent.setNextPos(newClosest);
-      return;
+      return new Intent(agent.getCurrentPos(), agent.getNextPos(), agent);
     }
 
-    return;
+    return idle();
     // We are in the case we have the same cost
     //@TODO flip coin
   }
