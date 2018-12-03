@@ -2,6 +2,7 @@ package model.communication.message;
 
 import java.util.Collections;
 import java.util.List;
+import model.agents.Handler;
 import model.agents.Vehicle;
 import model.communication.Invoker;
 import model.communication.Receiver;
@@ -23,8 +24,9 @@ public class Information implements Command {
   @Override
   public void execute() {
     Vehicle vehicle = (Vehicle) author;
-    System.out.println("Token should be released");
-    vehicle.getSem().release(1);
+    Vehicle agent = Handler.getAgent(vehicle.getId());
+    agent.getSem().release(1);
+    agent.addCost(averageCost);
   }
 
   @Override

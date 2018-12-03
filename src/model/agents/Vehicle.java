@@ -5,6 +5,7 @@ import static util.PointOperations.pointToString;
 import java.awt.Point;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -41,6 +42,7 @@ public class Vehicle implements Invoker, Receiver {
   private Queue<Command> commands;
   private transient Land land; //Need to put that cause Optional which is in Land > Road is not serializable
   private transient Semaphore semaphore;
+  private List<Double> costs;
 
   private Vehicle() {
     id = nbVehicles++;
@@ -84,6 +86,7 @@ public class Vehicle implements Invoker, Receiver {
   public void move() {
     this.currentPos = nextPos;
     nextPos = null;
+    costs = new ArrayList<>();
   }
 
   @Override
@@ -200,5 +203,13 @@ public class Vehicle implements Invoker, Receiver {
 
   public Semaphore getSem() {
     return this.semaphore;
+  }
+
+  public List<Double> getCosts() {
+    return this.costs;
+  }
+
+  public void addCost(double cost) {
+    this.costs.add(cost);
   }
 }
