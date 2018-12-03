@@ -94,8 +94,10 @@ public class DumbMotion implements MotionStrategy {
       agent.setNextPos(myIntent.getTo());
       return;
     }
+    //@TODO wait for answer
     if (availablePoints.isEmpty()) {
       //@TODO warn other guy
+      //@TODO need to flip a coin
       agent.setNextPos(myIntent.getTo());
       return;
     }
@@ -106,14 +108,21 @@ public class DumbMotion implements MotionStrategy {
             .comparing(point ->
                 getEuclidianDistance(point, agent.getDestination()))
         ).orElseThrow(IllegalStateException::new);
+    //@TODO if no available points from other guy, take the closest one
 
-    //@TODO send closest
+    //@TODO send closest cost
+    //@TODO wait for answer
     double otherCost = 1625676;
-    if (otherCost < getEuclidianDistance(newClosest, agent.getDestination())) {   // I have the max cost so I should go first
+    double myCost = getEuclidianDistance(newClosest, agent.getDestination());
+    if (otherCost < myCost) {   // I have the max cost so I should go first
       agent.setNextPos(myIntent.getTo());
       return;
     }
-    idle();
-
+    if (otherCost > myCost) {
+     agent.setNextPos(newClosest);
+     return;
+    }
+    // We are in the case we have the same cost
+    //@TODO flip coin
   }
 }
