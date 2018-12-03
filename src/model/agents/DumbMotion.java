@@ -76,6 +76,7 @@ public class DumbMotion implements MotionStrategy {
   }
 
   private Intent idle() {
+    agent.setNextPos(agent.getCurrentPos());    // need to be set, otherwise we can have null pointer exception
     return createIntent(agent.getCurrentPos());
   }
 
@@ -110,27 +111,28 @@ public class DumbMotion implements MotionStrategy {
       agent.log("Swag");
       return myIntent;
     }
-
-    agent.log("Acquiring and blocking");
-
-    for (Intent intent : intents) {
-      resolveConflict(intent, myIntent);
-    }
-    //Send intent to conflicted
-    Semaphore sem = locks.get(myIntent.getTo());
-    this.agent.setSem(sem);
-    try {
-      sem.acquire();
-
-      return idle();
-      // We are in the case we have the same cost
-      //@TODO flip coin
-    } catch (InterruptedException e) {
-      return idle();
-    } finally {
-      sem.release();
-    }
-
+    return idle();
+//
+//    agent.log("Acquiring and blocking");
+//
+//    for (Intent intent : intents) {
+//      resolveConflict(intent, myIntent);
+//    }
+//    //Send intent to conflicted
+//    Semaphore sem = locks.get(myIntent.getTo());
+//    this.agent.setSem(sem);
+//    try {
+//      sem.acquire();
+//
+//      return idle();
+//      // We are in the case we have the same cost
+//      //@TODO flip coin
+//    } catch (InterruptedException e) {
+//      return idle();
+//    } finally {
+//      sem.release();
+//    }
+//
 
   }
 
