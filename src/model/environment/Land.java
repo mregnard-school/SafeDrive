@@ -2,6 +2,7 @@ package model.environment;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -127,9 +128,31 @@ public class Land {
     return points;
   }
 
+  public List<Point> around(Point point) {
+    List<Point> points=  EnumSet.allOf(Direction.class).stream().map(direction -> {
+      Point next = direction.next(point);
+      if (!isInLand(next)) {
+        return null;
+      }
+      boolean tes = getRoadsForPoint(next)
+          .anyMatch(road ->
+              (road.getAxis()
+                  .equals(direction) || !road.getAxis()
+                      .equals(direction.opposite())));
+      if (tes) {
+        return next;
+      }
+      return null;
+      }).filter(point1 -> point != null).collect(Collectors.toList());
+    return points;
+  }
+
   private boolean debg(Point point, Direction direction) {
+    if (!getRoadsForPoint(point).findAny().isPresent()) {
+      return false;
+    }
     return getRoadsForPoint(point)
-        .anyMatch(road -> road.getAxis() == direction);
+        .noneMatch(road -> road.getAxis().equals(direction.opposite()));
   }
 
 
